@@ -76,17 +76,22 @@ public class DataBase {
     public static List<QuestionBuilder> fileReaderToList (String questionFile) {
         List<QuestionBuilder> questionList = new ArrayList<>();
         String line;
-        String[] questionData4partsLine = new String[3];
+        String[] questionData4partsLine = new String[5];
+
         Path inFile = Paths.get(questionFile);
 
         try(Scanner fileReader = new Scanner(inFile)){
             while (fileReader.hasNext()) {
                 line = fileReader.nextLine();
                 questionData4partsLine = line.split(";");
+
                 QuestionBuilder qb = new QuestionBuilder(questionData4partsLine[0].trim(),
                         questionData4partsLine[1].trim(),
                         questionData4partsLine[2].trim(),
-                        questionData4partsLine[3].trim());
+                        questionData4partsLine[3].trim(),
+                        questionData4partsLine[4].trim(),
+                        questionData4partsLine[5].trim());
+
                 questionList.add(qb);
             }
         }
@@ -100,5 +105,21 @@ public class DataBase {
             e.printStackTrace();
         }
         return questionList;
+    }
+    public List<QuestionBuilder> getCategoryList
+            (String category, List<QuestionBuilder> questionList, int questionPerRound){
+        List<QuestionBuilder> temp = new ArrayList<>();
+        List<QuestionBuilder> categoryList = new ArrayList<>();
+
+        for (QuestionBuilder qb : questionList){
+            if(qb.category.equals(category)){
+                categoryList.add(qb);
+            }
+        }
+        Collections.shuffle(categoryList);
+        for (int i = categoryList.size(); i > questionPerRound; i--) {
+            categoryList.remove(categoryList.size()-1);
+        }
+        return categoryList;
     }
 }

@@ -20,9 +20,10 @@ public class Game {
 
     List<String> categories = new ArrayList<>();
 
-
+    String pathToQuestionFile = "src/questionfile.txt";
     public Game (){
         Properties properties = new Properties();
+        DataBase.fileReaderToList(pathToQuestionFile);
         try {
             properties.load(new FileInputStream("src/Game.properties"));
         } catch (FileNotFoundException e) {
