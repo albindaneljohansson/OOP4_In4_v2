@@ -16,6 +16,7 @@ import java.util.List;
  *
  * 1 - New Game
  * 2 - next Round
+ * -1 - surrender
  *
  * resultat i String array:
  * [0] -  TYP AV INFORMATION SOM SKA SKICKAS?? (0 = RESULTAT för rond, 1=resultat för spel? AVATAR, ?? )
