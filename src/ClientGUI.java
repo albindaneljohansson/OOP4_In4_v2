@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
-
+//          DEN HÄR SKA TAS BORT SEDAN, DET ÄR DEN JAG HADE JOBBAT MED INANN JAG PUSSLADE IHOP.
+//          DET ÄR CLIENT SOM GÄLLER!! VÅGAR BARA INTE DELETA ÄN INNAN JAG SER VAD SOM FÖLJER MED UPP
 public class ClientGUI extends JFrame implements ActionListener {
     JPanel commandPanel = new JPanel();
     JButton newGameButton = new JButton("Starta nytt spel");
