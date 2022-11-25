@@ -129,9 +129,9 @@ public class Client extends JFrame implements ActionListener {
         //commandPanel.setLayout(new FlowLayout());
         commandPanel.setLayout(new GridLayout(1,3,4,4));
 
-        commandPanel.add(newGameButton);
-        commandPanel.add(nextRoundButton);
-        commandPanel.add(surrenderButton);
+        commandPanel.add(newGameButton,LEFT_ALIGNMENT);
+        commandPanel.add(nextRoundButton, CENTER_ALIGNMENT);
+        commandPanel.add(surrenderButton, RIGHT_ALIGNMENT);
         newGameButton.setVisible(true);
         nextRoundButton.setVisible(false);// knappen syns inte
         surrenderButton.setVisible(false);
@@ -178,10 +178,15 @@ public class Client extends JFrame implements ActionListener {
        // nextRoundButton.setEnabled(false); //knappen kan inte tryckas på medan ronden pågår
         nextRoundButton.setVisible(false);
 
-        alternativeButton_1.setBackground(Color.lightGray); //färg på knapparna i grundläget
+    /*    alternativeButton_1.setBackground(Color.lightGray); //färg på knapparna i grundläget
         alternativeButton_2.setBackground(Color.lightGray);
         alternativeButton_3.setBackground(Color.lightGray);//myButton.setBackground(null) ger default-färgen
         alternativeButton_4.setBackground(Color.lightGray);
+     */
+        alternativeButton_1.setBackground(null);
+        alternativeButton_2.setBackground(null);
+        alternativeButton_3.setBackground(null);
+        alternativeButton_4.setBackground(null);
 
         alternativesPanel.setVisible(true);
         alternativeButton_1.setText(list.get(0));
@@ -206,9 +211,9 @@ public class Client extends JFrame implements ActionListener {
         if (roundsPlayed == roundsPerGame) {            // om spelet är klart
             questionLabel.setText(roundResult);         // visa rondresultat och ny knapp för hela spelets resultat
 
+            commandPanel.add(showFinalResultButton, CENTER_ALIGNMENT);
+            nextRoundButton.setVisible(false);
             surrenderButton.setVisible(false);
-            commandPanel.remove(nextRoundButton);
-            commandPanel.add(showFinalResultButton);       //LÄGG TILL KNAPPEN I COMMANDPANEL, TA BORT SURRENDER
             repaint();
             revalidate();
         }
@@ -312,6 +317,9 @@ public class Client extends JFrame implements ActionListener {
                 }
                 finalResult = finalResult +"</html>";
                 questionLabel.setText(finalResult);
+
+                newGameButton.setVisible(true);             //visa knappen igen för att se om mann vill starta ett nytt spel dock så startas inte nytt spel när den trycks in
+                showFinalResultButton.setVisible(false);    //gömmer knappen igen
                 repaint();
                 revalidate();
             }
@@ -336,20 +344,20 @@ public class Client extends JFrame implements ActionListener {
                     repaint();                              //den sover, men med default-färgen
                     revalidate();
                     Thread.sleep(200);
-               //     button.setBackground(null);
-
+                    button.setBackground(null);
                     correctAnswer = true; //Anna: behövs den här variabeln? varför inte ObjOut.writeObject(true);
                     // och motsvarande i else-satsen
                     ObjOut.writeObject((Boolean) correctAnswer);
                     ObjOut.flush();
+
                 }
                 if (!answer.equalsIgnoreCase(questionList.get(5))){
 
                     button.setBackground(Color.RED);
                     repaint();
                     revalidate();
-                    Thread.sleep(200);
-                  //  button.setBackground(null);
+                    //Thread.sleep(200);                //spelar ingen roll ifall jag har en sleep eller inte.
+                    //button.setBackground(null);       //går det att försöka ändra så färgen är för när knappen är nedtryckt
 
                     correctAnswer = false;
                     ObjOut.writeObject((Boolean) correctAnswer);
