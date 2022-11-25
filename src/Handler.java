@@ -102,6 +102,19 @@ public class Handler extends Thread {
                             ObjOut.flush();
 
                         }
+
+                        if (command==-1){ //surrender
+                            ObjOut.writeObject((String) playerName + " gav upp spelet"); //istället skicka nånting helt annat, vill få meddelandet i labeln
+                            ObjOut.flush();
+                            //om jag inte tänker alldeles galet nu så kommer väl det där meddelandet i chatten?
+                            // man behöver ju kanske också se till att den spelare som inte tryckte på knappen avslutas på ett säkert sätt?
+                            //men det kanske man kan lösa i Client-klassen så att man den bara kollar strängarna som kommer in
+                            // och om det är ett surrendermeddelande så stängs det ner?
+                            //ytterligare en tanke... hur vill man göra med newGame när man har avslutat ett helt spel?
+                            // som det är nu så blir det ju alltid så att det är samma två spelare igen som skulle kunna starta om
+                        }
+
+
                     }
 
                     if (objectIn instanceof Boolean) {   // Varje gång clienten svarat på en fråga hoppar vi in här

@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
+
 /** Object input/outputstream:
  * String för chat
  * Listor (in) för frågor
@@ -16,7 +18,7 @@ import java.util.List;
  *
  * 1 - New Game
  * 2 - next Round
- * -1 - surrender
+ * -1 - Surrender
  *
  * resultat i String array:
  * [0] -  TYP AV INFORMATION SOM SKA SKICKAS?? (0 = RESULTAT för rond, 1=resultat för spel? AVATAR, ?? )
@@ -28,31 +30,37 @@ import java.util.List;
  */
 
 public class Client extends JFrame implements ActionListener {
-    String playerName;
 
-    String opponentPlayerName;
+    JPanel commandPanel = new JPanel();
+    JButton newGameButton = new JButton("Starta nytt spel");
+    JButton nextRoundButton = new JButton("Nästa rond");
+    JButton showFinalResultButton = new JButton("Visa spelresultat");
+    JButton surrenderButton = new JButton("Ge upp");
+
     JPanel gamePanel = new JPanel();
+    JPanel alternativesPanel = new JPanel();
+    JButton alternativeButton_1 = new JButton(" ");
+    JButton alternativeButton_2 = new JButton(" ");
+    JButton alternativeButton_3 = new JButton(" ");
+    JButton alternativeButton_4 = new JButton(" ");
 
     JPanel questionPanel = new JPanel();
-    JPanel chatPanel = new JPanel();
+    JLabel questionLabel = new JLabel(" ");
 
+
+    JPanel chatPanel = new JPanel();
     JTextArea chatArea = new JTextArea(8,33);
     JScrollPane sp   = new JScrollPane(chatArea,
             JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     JTextField textField = new JTextField(33);
-    JButton newGameButton = new JButton("Starta nytt spel");
-    JButton nextRoundButton = new JButton("Nästa rond");
-    JButton showFinalResultButton = new JButton("Visa spelresultat");
-    JLabel questionLabel = new JLabel(" ");
 
 
-    JButton questionButton_1 = new JButton(" ");
-    JButton questionButton_2 = new JButton(" ");
-    JButton questionButton_3 = new JButton(" ");
-    JButton questionButton_4 = new JButton(" ");
 
     ObjectInputStream ObjIn;
     ObjectOutputStream ObjOut;
+
+    String playerName;
+    static String opponentPlayerName;           //slippa hämta namnet om och om igen?
 
     List<String> questionList;
     List<String> scoreList=new ArrayList<>();
@@ -64,14 +72,13 @@ public class Client extends JFrame implements ActionListener {
     //plocka bort frågeknappar medan vi väntar
     int questionsAnswered = 0;
 
+
     boolean win;
-
     boolean correctAnswer;
-
-
 
     static int Command_newGame = 1;
     static int Command_newRound = 2;
+    static int Command_surrender = -1;
 
     public  Client () throws IOException {
 
@@ -85,33 +92,29 @@ public class Client extends JFrame implements ActionListener {
         }
 
         playerName = JOptionPane.showInputDialog(null, "Ange ditt namn").toUpperCase().trim();
+
         ObjOut.writeObject(playerName);
+
+        buildGUI();
+
+    }
+    public void buildGUI() {
         setTitle("Quizzkampen - " + playerName);
         setLayout(new BorderLayout());
-        add(gamePanel, BorderLayout.NORTH);
-        add(questionPanel, BorderLayout.CENTER);
-        add(chatPanel, BorderLayout.SOUTH);
+        add(buildCommandPanel(), BorderLayout.NORTH);
+        add(buildGamePanel(), BorderLayout.CENTER);
+        add(buildChatPanel(), BorderLayout.SOUTH);
 
-        DefaultCaret caret = (DefaultCaret)chatArea.getCaret();  // Dessa två rader sätter uppdateringspolicy för
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);      // Scrollpane så nedersta raden visas
-
-
-        chatArea.setEditable(false);
-        gamePanel.setLayout(new GridLayout(2,2,5,5));
-        gamePanel.add(newGameButton);
-        chatPanel.setLayout(new BorderLayout());
-
-        chatPanel.add(sp, BorderLayout.CENTER);
-        chatPanel.add(textField, BorderLayout.SOUTH);
 
         newGameButton.addActionListener(this);
-        questionButton_1.addActionListener(this);
-        questionButton_2.addActionListener(this);
-        questionButton_3.addActionListener(this);
-        questionButton_4.addActionListener(this);
-        textField.addActionListener(this);
         nextRoundButton.addActionListener(this);
+        surrenderButton.addActionListener(this);    //actionlyssnare för surrender
         showFinalResultButton.addActionListener(this);
+        alternativeButton_1.addActionListener(this);
+        alternativeButton_2.addActionListener(this);
+        alternativeButton_3.addActionListener(this);
+        alternativeButton_4.addActionListener(this);
+        textField.addActionListener(this);
 
         //pack();
         setSize(400, 400);
@@ -121,53 +124,107 @@ public class Client extends JFrame implements ActionListener {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
-    public void addQuestionButtons(List<String> list) { // Titlar sätts från fråge-listan
-        gamePanel.remove(newGameButton);
-        gamePanel.add(questionButton_1);
-        gamePanel.add(questionButton_2);
-        gamePanel.add(questionButton_3);
-        gamePanel.add(questionButton_4);
+    public JPanel buildCommandPanel() {
+
+        //commandPanel.setLayout(new FlowLayout());
+        commandPanel.setLayout(new GridLayout(1,3,4,4));
+
+        commandPanel.add(newGameButton,LEFT_ALIGNMENT);
+        commandPanel.add(nextRoundButton, CENTER_ALIGNMENT);
+        commandPanel.add(surrenderButton, RIGHT_ALIGNMENT);
+        newGameButton.setVisible(true);
+        nextRoundButton.setVisible(false);// knappen syns inte
+        surrenderButton.setVisible(false);
+   //     newGameButton.setEnabled(true); //knappen är aktiv och kan tryckas ner
+     //   nextRoundButton.setEnabled(false); //knappen syns, men kan inte tryckas ner
+       // surrenderButton.setEnabled(false);
+        return commandPanel;
+    }
+
+    public JPanel buildGamePanel() {
+        gamePanel.setLayout(new BorderLayout());
+        alternativesPanel = buildAlternativesPanel();
+        gamePanel.add(alternativesPanel, BorderLayout.NORTH);
+        alternativesPanel.setVisible(false);
         questionPanel.add(questionLabel);
-        questionButton_1.setText(list.get(0));
-        questionButton_2.setText(list.get(1));
-        questionButton_3.setText(list.get(2));
-        questionButton_4.setText(list.get(3));
+        gamePanel.add(questionPanel, BorderLayout.CENTER);
+        return gamePanel;
+    }
+
+    public JPanel buildAlternativesPanel() {
+        alternativesPanel.setLayout(new GridLayout(2, 2, 5, 5));
+        alternativesPanel.add(alternativeButton_1);
+        alternativesPanel.add(alternativeButton_2);
+        alternativesPanel.add(alternativeButton_3);
+        alternativesPanel.add(alternativeButton_4);
+        return alternativesPanel;
+    }
+
+    public JPanel buildChatPanel() {
+        chatPanel.setLayout(new BorderLayout());
+        chatArea.setEditable(false);
+        DefaultCaret caret = (DefaultCaret)chatArea.getCaret();  // Dessa två rader sätter uppdateringspolicy för
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);      // Scrollpane så nedersta raden visas
+
+        sp.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS); //alt VERTICAL_SCROLLBAR_AS_NEEDED
+
+        chatPanel.add(sp, BorderLayout.CENTER);
+        chatPanel.add(textField, BorderLayout.SOUTH);
+        return chatPanel;
+    }
+
+    public void setUpQuestion(List<String> list) { // Titlar sätts från fråge-listan
+
+       // nextRoundButton.setEnabled(false); //knappen kan inte tryckas på medan ronden pågår
+        nextRoundButton.setVisible(false);
+
+    /*    alternativeButton_1.setBackground(Color.lightGray); //färg på knapparna i grundläget
+        alternativeButton_2.setBackground(Color.lightGray);
+        alternativeButton_3.setBackground(Color.lightGray);//myButton.setBackground(null) ger default-färgen
+        alternativeButton_4.setBackground(Color.lightGray);
+     */
+        alternativeButton_1.setBackground(null);
+        alternativeButton_2.setBackground(null);
+        alternativeButton_3.setBackground(null);
+        alternativeButton_4.setBackground(null);
+
+        alternativesPanel.setVisible(true);
+        alternativeButton_1.setText(list.get(0));
+        alternativeButton_2.setText(list.get(1));
+        alternativeButton_3.setText(list.get(2));
+        alternativeButton_4.setText(list.get(3));
         questionLabel.setText(list.get(4));
         repaint();
         revalidate();
     }
 
-    public void newGame (){
-        gamePanel.remove(questionButton_1);
-        gamePanel.remove(questionButton_2);
-        gamePanel.remove(questionButton_3);
-        gamePanel.remove(questionButton_4);
-        questionLabel.setText("  ");
-        gamePanel.add(newGameButton);
-        repaint();
-        revalidate();
-    }
 
     public void newRound (String roundResult){
         if (roundsPlayed < roundsPerGame) {             // Om inte spelet är klart
             questionLabel.setText(roundResult);
-            gamePanel.add(nextRoundButton);
+            //gamePanel.add(nextRoundButton);
+            nextRoundButton.setEnabled(true);           //knappen blir tilgänglig
+            nextRoundButton.setVisible(true);           //knappen synlig
             repaint();
             revalidate();
         }
         if (roundsPlayed == roundsPerGame) {            // om spelet är klart
             questionLabel.setText(roundResult);         // visa rondresultat och ny knapp för hela spelets resultat
-            gamePanel.add(showFinalResultButton);
+
+            commandPanel.add(showFinalResultButton, CENTER_ALIGNMENT);
+            nextRoundButton.setVisible(false);
+            surrenderButton.setVisible(false);
             repaint();
             revalidate();
         }
     }
 
     public void waitForOpponent(){                          // Båda spelare hoppar hit efter en klar ronda
-        gamePanel.remove(questionButton_1);                 // men spleare 2 hinner inte se detta innan GUI uppdatera igen
-        gamePanel.remove(questionButton_2);                 // då resultatlistan kommer in
-        gamePanel.remove(questionButton_3);
-        gamePanel.remove(questionButton_4);
+        //gamePanel.remove(alternativeButton_1);                 // men spleare 2 hinner inte se detta innan GUI uppdatera igen
+        //gamePanel.remove(alternativeButton_2);                 // då resultatlistan kommer in
+        //gamePanel.remove(alternativeButton_3);
+        //gamePanel.remove(alternativeButton_4);
+        alternativesPanel.setVisible(false);                //döljer panelen med knapparna
         questionLabel.setText("Väntar på motspelare");
         repaint();
         revalidate();
@@ -189,7 +246,7 @@ public class Client extends JFrame implements ActionListener {
                     questionList = (List<String>) fromServer;
                     questionsPerRound = Integer.parseInt(questionList.get(6));  //Hämtar questionsPerRound
                     roundsPerGame = Integer.parseInt(questionList.get(7));
-                    addQuestionButtons(questionList);
+                    setUpQuestion(questionList);
 
                 }
 
@@ -218,7 +275,7 @@ public class Client extends JFrame implements ActionListener {
 
                 }
                 if (fromServer instanceof Integer) {                    // visa resultat för hela spelet
-                    int command99 = (int) fromServer;
+                    int command99 = (int) fromServer;                   // här även lägga in för surrender
                 }
             }
         } catch (Exception e) {
@@ -235,12 +292,16 @@ public class Client extends JFrame implements ActionListener {
                 textField.setText("");
             }
             if (e.getSource() == newGameButton) {                   // triggar handler att skicka lista med frågor
+
+                newGameButton.setVisible(false);                    //knappen osynlig resten av spelet
+                surrenderButton.setVisible(true);                   //knappen blir synlig resten av spelet
+
                 ObjOut.writeObject((int) Command_newGame);
                 ObjOut.flush();
 
             }
             if (e.getSource()== nextRoundButton){                   //trigga handler att skicka nästa lista med frågor
-                gamePanel.remove(nextRoundButton);
+               // gamePanel.remove(nextRoundButton);
                 repaint();
                 revalidate();
                 ObjOut.writeObject((int) Command_newRound);
@@ -256,24 +317,48 @@ public class Client extends JFrame implements ActionListener {
                 }
                 finalResult = finalResult +"</html>";
                 questionLabel.setText(finalResult);
+
+                newGameButton.setVisible(true);             //visa knappen igen för att se om mann vill starta ett nytt spel dock så startas inte nytt spel när den trycks in
+                showFinalResultButton.setVisible(false);    //gömmer knappen igen
                 repaint();
                 revalidate();
             }
+            if (e.getSource() == surrenderButton){
 
-            if ((e.getSource() == questionButton_1) || (e.getSource() == questionButton_2)
-                    || (e.getSource() == (questionButton_3)) || (e.getSource() == (questionButton_4))) {
+                ObjOut.writeObject((int) Command_surrender);
+                ObjOut.flush();
+
+                System.exit(0); //rätt sätt att ge upp? kanske bättre med att kunna välja newGame?
+            }
+
+            if ((e.getSource() == alternativeButton_1) || (e.getSource() == alternativeButton_2)
+                    || (e.getSource() == (alternativeButton_3)) || (e.getSource() == (alternativeButton_4))) {
                 JButton button = (JButton)e.getSource();
                 String answer = button.getText();
 
                 questionsAnswered++;
 
                 if (answer.equalsIgnoreCase(questionList.get(5))) {
+
+                    button.setBackground(Color.GREEN);      //funkar fortfarande inte. färgen ändras inte
+                    repaint();                              //den sover, men med default-färgen
+                    revalidate();
+                    Thread.sleep(200);
+                    button.setBackground(null);
                     correctAnswer = true; //Anna: behövs den här variabeln? varför inte ObjOut.writeObject(true);
                     // och motsvarande i else-satsen
                     ObjOut.writeObject((Boolean) correctAnswer);
                     ObjOut.flush();
+
                 }
                 if (!answer.equalsIgnoreCase(questionList.get(5))){
+
+                    button.setBackground(Color.RED);
+                    repaint();
+                    revalidate();
+                    //Thread.sleep(200);                //spelar ingen roll ifall jag har en sleep eller inte.
+                    //button.setBackground(null);       //går det att försöka ändra så färgen är för när knappen är nedtryckt
+
                     correctAnswer = false;
                     ObjOut.writeObject((Boolean) correctAnswer);
                     ObjOut.flush();
