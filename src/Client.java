@@ -180,7 +180,7 @@ public class Client extends JFrame implements ActionListener {
 
         alternativeButton_1.setBackground(Color.lightGray); //färg på knapparna i grundläget
         alternativeButton_2.setBackground(Color.lightGray);
-        alternativeButton_3.setBackground(Color.lightGray);
+        alternativeButton_3.setBackground(Color.lightGray);//myButton.setBackground(null) ger default-färgen
         alternativeButton_4.setBackground(Color.lightGray);
 
         alternativesPanel.setVisible(true);
@@ -315,6 +315,13 @@ public class Client extends JFrame implements ActionListener {
                 repaint();
                 revalidate();
             }
+            if (e.getSource() == surrenderButton){
+
+                ObjOut.writeObject((int) Command_surrender);
+                ObjOut.flush();
+
+                System.exit(0); //rätt sätt att ge upp? kanske bättre med att kunna välja newGame?
+            }
 
             if ((e.getSource() == alternativeButton_1) || (e.getSource() == alternativeButton_2)
                     || (e.getSource() == (alternativeButton_3)) || (e.getSource() == (alternativeButton_4))) {
@@ -324,12 +331,26 @@ public class Client extends JFrame implements ActionListener {
                 questionsAnswered++;
 
                 if (answer.equalsIgnoreCase(questionList.get(5))) {
+
+                    button.setBackground(Color.GREEN);      //funkar fortfarande inte. färgen ändras inte
+                    repaint();                              //den sover, men med default-färgen
+                    revalidate();
+                    Thread.sleep(200);
+               //     button.setBackground(null);
+
                     correctAnswer = true; //Anna: behövs den här variabeln? varför inte ObjOut.writeObject(true);
                     // och motsvarande i else-satsen
                     ObjOut.writeObject((Boolean) correctAnswer);
                     ObjOut.flush();
                 }
                 if (!answer.equalsIgnoreCase(questionList.get(5))){
+
+                    button.setBackground(Color.RED);
+                    repaint();
+                    revalidate();
+                    Thread.sleep(200);
+                  //  button.setBackground(null);
+
                     correctAnswer = false;
                     ObjOut.writeObject((Boolean) correctAnswer);
                     ObjOut.flush();
