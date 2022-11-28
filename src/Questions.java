@@ -16,17 +16,14 @@ public class Questions {
 
     public Questions(String category, int questionsPerRound, int roundsPerGame) {
         this.category=category;
-        Random rn = new Random();               // ger ett random for vilken fråga inom en kategori
-        int questionNumber = rn.nextInt(2);
-        DataBase db = new DataBase(category, questionNumber);
+        DataBase db = new DataBase(category);
         List<String> tempList = new ArrayList<>(db.getAlternatives());
         this.questionsAndAnswersList = tempList;
         questionsAndAnswersList.add(db.getQuestion());
         questionsAndAnswersList.add(db.getAnswer());
-        questionsAndAnswersList.add(String.valueOf(questionsPerRound)); //Lägger antal frågor per round sist i varje frågelista
-        questionsAndAnswersList.add(String.valueOf(roundsPerGame));
+        questionsAndAnswersList.add(String.valueOf(questionsPerRound));     //Lägger antal frågor per round
+        questionsAndAnswersList.add(String.valueOf(roundsPerGame));          //Lägger antal ronder
     }
-
     public String getCategory() {
         return category;
     }

@@ -29,6 +29,8 @@ import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
  * [5] - oppenent resultat
  */
 
+
+
 public class Client extends JFrame implements ActionListener {
 
     JPanel commandPanel = new JPanel();
@@ -40,6 +42,7 @@ public class Client extends JFrame implements ActionListener {
     JPanel gamePanel = new JPanel();
     JPanel alternativesPanel = new JPanel();
     JButton alternativeButton_1 = new JButton(" ");
+
     JButton alternativeButton_2 = new JButton(" ");
     JButton alternativeButton_3 = new JButton(" ");
     JButton alternativeButton_4 = new JButton(" ");
@@ -105,7 +108,6 @@ public class Client extends JFrame implements ActionListener {
         add(buildGamePanel(), BorderLayout.CENTER);
         add(buildChatPanel(), BorderLayout.SOUTH);
 
-
         newGameButton.addActionListener(this);
         nextRoundButton.addActionListener(this);
         surrenderButton.addActionListener(this);    //actionlyssnare för surrender
@@ -157,6 +159,15 @@ public class Client extends JFrame implements ActionListener {
         alternativesPanel.add(alternativeButton_2);
         alternativesPanel.add(alternativeButton_3);
         alternativesPanel.add(alternativeButton_4);
+
+        //alternativeButton_1.setBorderPainted(false);
+        //alternativeButton_1.setFocusPainted(false);
+        //alternativeButton_1.setBorder(null);
+        //alternativeButton_1.setIcon()
+        //alternativeButton_1.setContentAreaFilled(false);
+        //alternativeButton_1.setBackground(Color.gray);
+        //alternativeButton_1.setOpaque(true);
+
         return alternativesPanel;
     }
 
@@ -331,20 +342,26 @@ public class Client extends JFrame implements ActionListener {
                 System.exit(0); //rätt sätt att ge upp? kanske bättre med att kunna välja newGame?
             }
 
+
+
             if ((e.getSource() == alternativeButton_1) || (e.getSource() == alternativeButton_2)
                     || (e.getSource() == (alternativeButton_3)) || (e.getSource() == (alternativeButton_4))) {
                 JButton button = (JButton)e.getSource();
                 String answer = button.getText();
+                repaint();
+                revalidate();
 
                 questionsAnswered++;
 
                 if (answer.equalsIgnoreCase(questionList.get(5))) {
-
-                    button.setBackground(Color.GREEN);      //funkar fortfarande inte. färgen ändras inte
+                    //button.setBackground(Color.GREEN);
+                    //((JButton) e.getSource()).setText("Kalle");//funkar fortfarande inte. färgen ändras inte
                     repaint();                              //den sover, men med default-färgen
                     revalidate();
-                    Thread.sleep(200);
+                    Thread.sleep(300);
                     button.setBackground(null);
+                    repaint();                              //den sover, men med default-färgen
+                    revalidate();
                     correctAnswer = true; //Anna: behövs den här variabeln? varför inte ObjOut.writeObject(true);
                     // och motsvarande i else-satsen
                     ObjOut.writeObject((Boolean) correctAnswer);
@@ -353,8 +370,11 @@ public class Client extends JFrame implements ActionListener {
                 }
                 if (!answer.equalsIgnoreCase(questionList.get(5))){
 
-                    button.setBackground(Color.RED);
                     repaint();
+                    revalidate();
+                    Thread.sleep(300);
+                    button.setBackground(null);
+                    repaint();                              //den sover, men med default-färgen
                     revalidate();
                     //Thread.sleep(200);                //spelar ingen roll ifall jag har en sleep eller inte.
                     //button.setBackground(null);       //går det att försöka ändra så färgen är för när knappen är nedtryckt
