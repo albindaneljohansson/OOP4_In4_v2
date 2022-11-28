@@ -46,6 +46,8 @@ public class Client extends JFrame implements ActionListener {
     JButton alternativeButton_2 = new JButton(" ");
     JButton alternativeButton_3 = new JButton(" ");
     JButton alternativeButton_4 = new JButton(" ");
+    JLabel answerFeedback = new JLabel(" ");
+    JLabel wrong = new JLabel("Fel svar!");
 
     JPanel questionPanel = new JPanel();
     JLabel questionLabel = new JLabel(" ");
@@ -129,6 +131,49 @@ public class Client extends JFrame implements ActionListener {
     }
 
 
+    public JPanel buildCommandPanel() {
+        commandPanel.setLayout(new GridLayout(1, 3, 4, 4));
+
+        commandPanel.add(newGameButton);
+        commandPanel.add(avatarLabel);
+        commandPanel.add(blankLabel);
+
+        return commandPanel;
+    }
+
+    public JPanel buildGamePanel() {
+        gamePanel.setLayout(new BorderLayout());
+        alternativesPanel = buildAlternativesPanel();
+        gamePanel.add(alternativesPanel, BorderLayout.NORTH);
+        alternativesPanel.setVisible(false);
+        questionPanel.add(questionLabel);
+        gamePanel.add(questionPanel, BorderLayout.CENTER);
+        gamePanel.add(answerFeedback,BorderLayout.SOUTH);
+        return gamePanel;
+    }
+
+    public JPanel buildAlternativesPanel() {
+        alternativesPanel.setLayout(new GridLayout(2, 2, 5, 5));
+        alternativesPanel.add(alternativeButton_1);
+        alternativesPanel.add(alternativeButton_2);
+        alternativesPanel.add(alternativeButton_3);
+        alternativesPanel.add(alternativeButton_4);
+        return alternativesPanel;
+    }
+
+    public JPanel buildChatPanel() {
+        chatPanel.setLayout(new BorderLayout());
+        chatArea.setEditable(false);
+        DefaultCaret caret = (DefaultCaret) chatArea.getCaret();  // Dessa två rader sätter uppdateringspolicy för
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);      // Scrollpane så nedersta raden visas
+
+        sp.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS); //alt VERTICAL_SCROLLBAR_AS_NEEDED
+
+        chatPanel.add(sp, BorderLayout.CENTER);
+        chatPanel.add(textField, BorderLayout.SOUTH);
+        return chatPanel;
+    }
+
     public void updateCommandComponents (int command_int){
 
         commandPanel.remove(0);             //tömmer panelen så att den kan ersättas med nya komponenter
@@ -157,51 +202,15 @@ public class Client extends JFrame implements ActionListener {
         }
     }
 
-    public JPanel buildCommandPanel() {
-        commandPanel.setLayout(new GridLayout(1, 3, 4, 4));
-
-        commandPanel.add(newGameButton);
-        commandPanel.add(avatarLabel);
-        commandPanel.add(blankLabel);
-
-        return commandPanel;
-    }
-
-    public JPanel buildGamePanel() {
-        gamePanel.setLayout(new BorderLayout());
-        alternativesPanel = buildAlternativesPanel();
-        gamePanel.add(alternativesPanel, BorderLayout.NORTH);
-        alternativesPanel.setVisible(false);
-        questionPanel.add(questionLabel);
-        gamePanel.add(questionPanel, BorderLayout.CENTER);
-        return gamePanel;
-    }
-
-    public JPanel buildAlternativesPanel() {
-        alternativesPanel.setLayout(new GridLayout(2, 2, 5, 5));
-        alternativesPanel.add(alternativeButton_1);
-        alternativesPanel.add(alternativeButton_2);
-        alternativesPanel.add(alternativeButton_3);
-        alternativesPanel.add(alternativeButton_4);
-        return alternativesPanel;
-    }
-
-    public JPanel buildChatPanel() {
-        chatPanel.setLayout(new BorderLayout());
-        chatArea.setEditable(false);
-        DefaultCaret caret = (DefaultCaret) chatArea.getCaret();  // Dessa två rader sätter uppdateringspolicy för
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);      // Scrollpane så nedersta raden visas
-
-        sp.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS); //alt VERTICAL_SCROLLBAR_AS_NEEDED
-
-        chatPanel.add(sp, BorderLayout.CENTER);
-        chatPanel.add(textField, BorderLayout.SOUTH);
-        return chatPanel;
-    }
-
-    public void setUpQuestion(List<String> list) { // Titlar sätts från fråge-listan
+    public void setUpQuestion(List<String> list) throws InterruptedException { // Titlar sätts från fråge-listan
 
         updateCommandComponents(Command_newGame);
+        if (answerFeedback.getText().length()>1){
+            Thread.sleep(1000);
+            answerFeedback.setText(" ");
+            repaint();
+            revalidate();
+        }
 
         alternativesPanel.setVisible(true);
         alternativeButton_1.setText(list.get(0));
@@ -239,6 +248,7 @@ public class Client extends JFrame implements ActionListener {
         //alternativesPanel.remove(alternativeButton_4);
         alternativesPanel.setVisible(false);                //döljer panelen med knapparna
         questionLabel.setText("Väntar på motspelare");
+
         repaint();
         revalidate();
 
@@ -305,23 +315,15 @@ public class Client extends JFrame implements ActionListener {
                 textField.setText("");
             }
             if (e.getSource() == newGameButton) {                   // triggar handler att skicka lista med frågor
-
-
                 ObjOut.writeObject((int) Command_newGame);
                 ObjOut.flush();
-
             }
             if (e.getSource() == nextRoundButton) {                   //trigga handler att skicka nästa lista med frågor
-
-
-                repaint();
-                revalidate();
                 ObjOut.writeObject((int) Command_newRound);
                 ObjOut.flush();
             }
-
             if (e.getSource() == showFinalResultButton) {       //Plocka bort alla knappar och skriva ut scorelist
-                gamePanel.remove(showFinalResultButton);        // ända sättet att få ny rad i JLabel är tydligen HTML
+                                                                // enda sättet att få ny rad i JLabel är tydligen HTML
                 String finalResult = "<html>" + "<center>" + "Resultat:" + "</center>" +
                         "<br>" + playerName + ": &emsp; &emsp;" + opponentPlayerName + ":";
                 for (String s : scoreList) {                    // Hämtar resultat från ScoreList
@@ -330,8 +332,6 @@ public class Client extends JFrame implements ActionListener {
                 finalResult = finalResult + "</html>";
                 questionLabel.setText(finalResult);
 
-                newGameButton.setVisible(true);             //visa knappen igen för att se om mann vill starta ett nytt spel dock så startas inte nytt spel när den trycks in
-                showFinalResultButton.setVisible(false);    //gömmer knappen igen
                 repaint();
                 revalidate();
             }
@@ -352,12 +352,8 @@ public class Client extends JFrame implements ActionListener {
 
                 if (answer.equalsIgnoreCase(questionList.get(5))) {
 
-                    button.setBackground(Color.GREEN);      //funkar fortfarande inte. färgen ändras inte
-                    repaint();                              //den sover, men med default-färgen
-                    revalidate();
-                    Thread.sleep(200);
-                    button.setBackground(null);
-                    repaint();                              //den sover, men med default-färgen
+                    answerFeedback.setText("Rätt svar!");
+                    repaint();
                     revalidate();
 
                     correctAnswer = true; //Anna: behövs den här variabeln? varför inte ObjOut.writeObject(true);
@@ -368,18 +364,16 @@ public class Client extends JFrame implements ActionListener {
                 }
                 if (!answer.equalsIgnoreCase(questionList.get(5))) {
 
-                    button.setBackground(Color.RED);
-                    repaint();
-                    revalidate();
-                    //Thread.sleep(200);                //spelar ingen roll ifall jag har en sleep eller inte.
-                    //button.setBackground(null);       //går det att försöka ändra så färgen är för när knappen är nedtryckt
-
                     correctAnswer = false;
                     ObjOut.writeObject((Boolean) correctAnswer);
                     ObjOut.flush();
+
+                    answerFeedback.setText("Fel svar!");
+                    repaint();
+                    revalidate();
                 }
                 if (questionsAnswered == questionsPerRound) {  // Om man svarat antal frågor per runda
-                    waitForOpponent();                      // innan motståndare får man vänta på listan
+                        waitForOpponent();                      // innan motståndare får man vänta på listan
                 }
             }
         } catch (Exception ex) {
