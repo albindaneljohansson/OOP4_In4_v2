@@ -76,7 +76,7 @@ public class DataBase {
     public static List<QuestionBuilder> fileReaderToList (String questionFile) {
         List<QuestionBuilder> questionList = new ArrayList<>();
         String line;
-        String[] questionData4partsLine = new String[5];
+        String[] questionData4partsLine = new String[6];
 
         Path inFile = Paths.get(questionFile);
 

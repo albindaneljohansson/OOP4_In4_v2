@@ -36,6 +36,7 @@ public class Client extends JFrame implements ActionListener {
     JButton nextRoundButton = new JButton("Nästa rond");
     JButton showFinalResultButton = new JButton("Visa spelresultat");
     JButton surrenderButton = new JButton("Ge upp");
+    JLabel avatarLabel = new JLabel("url för avatar");
 
     JPanel gamePanel = new JPanel();
     JPanel alternativesPanel = new JPanel();
@@ -78,7 +79,10 @@ public class Client extends JFrame implements ActionListener {
 
     static int Command_newGame = 1;
     static int Command_newRound = 2;
+    static int Command_midRound = 3;    //anv för att kunna uppdatera commandPanel under en rundas gång
     static int Command_surrender = -1;
+
+    List<Object> commandObjectsList = new ArrayList<>();    //anv för att placera ut knappar o avatar på korrekta ställen i commandPanel
 
     public  Client () throws IOException {
 
@@ -95,6 +99,7 @@ public class Client extends JFrame implements ActionListener {
 
         ObjOut.writeObject(playerName);
 
+        setCommandObjectsList(-1);
         buildGUI();
 
     }
@@ -123,15 +128,37 @@ public class Client extends JFrame implements ActionListener {
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
+    public void setCommandObjectsList (int command_int){ //1 2 3 -1
+        commandObjectsList.clear();//nollställer listan
+        JLabel empty = new JLabel();
+        if (command_int==-1){//startläge, innan man påbörjat spel samt efter att man tryckt surrender
+            commandObjectsList.add(newGameButton);//newGame
+            commandObjectsList.add(avatarLabel);//avatar
+            commandObjectsList.add(empty);//tom
+        }
+        if (command_int==2){//väntan på att ny rond ska starta
+            commandObjectsList.add(nextRoundButton);//tom
+            commandObjectsList.add(avatarLabel);//avatar
+            commandObjectsList.add(surrenderButton);//surrender
+        }
+        if (command_int==3){//under tiden en rond spelas
+            commandObjectsList.add(empty);//tom
+            commandObjectsList.add(avatarLabel);//avatar
+            commandObjectsList.add(surrenderButton);//surrender
+        }
+
+
+
+    }
 
     public JPanel buildCommandPanel() {
 
         //commandPanel.setLayout(new FlowLayout());
         commandPanel.setLayout(new GridLayout(1,3,4,4));
 
-        commandPanel.add(newGameButton,LEFT_ALIGNMENT);
-        commandPanel.add(nextRoundButton, CENTER_ALIGNMENT);
-        commandPanel.add(surrenderButton, RIGHT_ALIGNMENT);
+        commandPanel.add((Component) commandObjectsList.get(0),LEFT_ALIGNMENT);
+        commandPanel.add((Component) commandObjectsList.get(1), CENTER_ALIGNMENT);
+        commandPanel.add((Component) commandObjectsList.get(2), RIGHT_ALIGNMENT);
         newGameButton.setVisible(true);
         nextRoundButton.setVisible(false);// knappen syns inte
         surrenderButton.setVisible(false);
@@ -182,12 +209,16 @@ public class Client extends JFrame implements ActionListener {
         alternativeButton_2.setBackground(Color.lightGray);
         alternativeButton_3.setBackground(Color.lightGray);//myButton.setBackground(null) ger default-färgen
         alternativeButton_4.setBackground(Color.lightGray);
-     */
+
         alternativeButton_1.setBackground(null);
         alternativeButton_2.setBackground(null);
         alternativeButton_3.setBackground(null);
         alternativeButton_4.setBackground(null);
-
+*/
+        alternativeButton_1.setOpaque(true);
+        alternativeButton_2.setOpaque(true);
+        alternativeButton_3.setOpaque(true);
+        alternativeButton_4.setOpaque(true);
         alternativesPanel.setVisible(true);
         alternativeButton_1.setText(list.get(0));
         alternativeButton_2.setText(list.get(1));
@@ -345,6 +376,9 @@ public class Client extends JFrame implements ActionListener {
                     revalidate();
                     Thread.sleep(200);
                     button.setBackground(null);
+                    repaint();                              //den sover, men med default-färgen
+                    revalidate();
+
                     correctAnswer = true; //Anna: behövs den här variabeln? varför inte ObjOut.writeObject(true);
                     // och motsvarande i else-satsen
                     ObjOut.writeObject((Boolean) correctAnswer);
