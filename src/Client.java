@@ -303,7 +303,6 @@ public class Client extends JFrame implements ActionListener {
                         scoreList.add(resultArray[3] + "-" + resultArray[5]); // lägger till rondens resultat till en lista
                         newRound(roundResult);                                 // som kan visas i slutet av spelet
                     }
-
                 }
                 if (fromServer instanceof Integer) {                    // visa resultat för hela spelet
                     int command99 = (int) fromServer;                   // här även lägga in för surrender
