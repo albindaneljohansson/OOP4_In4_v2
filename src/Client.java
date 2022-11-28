@@ -46,8 +46,7 @@ public class Client extends JFrame implements ActionListener {
     JButton alternativeButton_2 = new JButton(" ");
     JButton alternativeButton_3 = new JButton(" ");
     JButton alternativeButton_4 = new JButton(" ");
-    JLabel answerFeedback = new JLabel(" ");
-    JLabel wrong = new JLabel("Fel svar!");
+    String answerFeedback;
 
     JPanel questionPanel = new JPanel();
     JLabel questionLabel = new JLabel(" ");
@@ -148,7 +147,7 @@ public class Client extends JFrame implements ActionListener {
         alternativesPanel.setVisible(false);
         questionPanel.add(questionLabel);
         gamePanel.add(questionPanel, BorderLayout.CENTER);
-        gamePanel.add(answerFeedback,BorderLayout.SOUTH);
+        //gamePanel.add(answerFeedback,BorderLayout.SOUTH);
         return gamePanel;
     }
 
@@ -205,11 +204,8 @@ public class Client extends JFrame implements ActionListener {
     public void setUpQuestion(List<String> list) throws InterruptedException { // Titlar sätts från fråge-listan
 
         updateCommandComponents(Command_newGame);
-        if (answerFeedback.getText().length()>1){
-            Thread.sleep(1000);
-            answerFeedback.setText(" ");
-            repaint();
-            revalidate();
+        if (answerFeedback !=null){
+            returnButtonColor();
         }
 
         alternativesPanel.setVisible(true);
@@ -222,6 +218,16 @@ public class Client extends JFrame implements ActionListener {
         revalidate();
     }
 
+    public void returnButtonColor() throws InterruptedException {
+        Thread.sleep(1000);
+        alternativeButton_1.setBackground(null);
+        alternativeButton_2.setBackground(null);
+        alternativeButton_3.setBackground(null);
+        alternativeButton_4.setBackground(null);
+        repaint();
+        revalidate();
+        answerFeedback=null;
+    }
 
     public void newRound(String roundResult) {
         if (roundsPlayed < roundsPerGame) {             // Om inte spelet är klart
@@ -241,12 +247,18 @@ public class Client extends JFrame implements ActionListener {
         }
     }
 
-    public void waitForOpponent() {                          // Båda spelare hoppar hit efter en klar ronda
+    public void waitForOpponent() throws InterruptedException {                                      // Båda spelare hoppar hit efter en klar ronda
         //alternativesPanel.remove(alternativeButton_1);                 // men spleare 2 hinner inte se detta innan GUI uppdatera igen
         //alternativesPanel.remove(alternativeButton_2);                 // då resultatlistan kommer in
         //alternativesPanel.remove(alternativeButton_3);
         //alternativesPanel.remove(alternativeButton_4);
-        alternativesPanel.setVisible(false);                //döljer panelen med knapparna
+
+
+     //   returnButtonColor();
+
+
+
+        //alternativesPanel.setVisible(false);                //döljer panelen med knapparna
         questionLabel.setText("Väntar på motspelare");
 
         repaint();
@@ -270,7 +282,6 @@ public class Client extends JFrame implements ActionListener {
                     questionsPerRound = Integer.parseInt(questionList.get(6));  //Hämtar questionsPerRound
                     roundsPerGame = Integer.parseInt(questionList.get(7));
                     setUpQuestion(questionList);
-
                 }
 
                 if (fromServer instanceof String[]) {                            // tar emot resultat-arrayer
@@ -352,7 +363,9 @@ public class Client extends JFrame implements ActionListener {
 
                 if (answer.equalsIgnoreCase(questionList.get(5))) {
 
-                    answerFeedback.setText("Rätt svar!");
+                    button.setBackground(Color.GREEN);
+                    answerFeedback="Rätt";
+                    //answerFeedback.setText("Rätt svar!");
                     repaint();
                     revalidate();
 
@@ -364,16 +377,18 @@ public class Client extends JFrame implements ActionListener {
                 }
                 if (!answer.equalsIgnoreCase(questionList.get(5))) {
 
+
+                    button.setBackground(Color.RED);
+                    answerFeedback="Fel";
+                    repaint();
+                    revalidate();
+
                     correctAnswer = false;
                     ObjOut.writeObject((Boolean) correctAnswer);
                     ObjOut.flush();
-
-                    answerFeedback.setText("Fel svar!");
-                    repaint();
-                    revalidate();
                 }
                 if (questionsAnswered == questionsPerRound) {  // Om man svarat antal frågor per runda
-                        waitForOpponent();                      // innan motståndare får man vänta på listan
+                    waitForOpponent();                      // innan motståndare får man vänta på listan
                 }
             }
         } catch (Exception ex) {
