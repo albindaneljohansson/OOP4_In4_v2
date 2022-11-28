@@ -10,16 +10,17 @@ import java.util.List;
 
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
 
-/** Object input/outputstream:
+/**
+ * Object input/outputstream:
  * String för chat
  * Listor (in) för frågor
  * boolean för rätt/fel svar
  * int för spellogik, command:
- *
+ * <p>
  * 1 - New Game
  * 2 - next Round
  * -1 - Surrender
- *
+ * <p>
  * resultat i String array:
  * [0] -  TYP AV INFORMATION SOM SKA SKICKAS?? (0 = RESULTAT för rond, 1=resultat för spel? AVATAR, ?? )
  * [1] - 0 förlust, 1 vinst, 2 oavgjort
@@ -37,6 +38,7 @@ public class Client extends JFrame implements ActionListener {
     JButton showFinalResultButton = new JButton("Visa spelresultat");
     JButton surrenderButton = new JButton("Ge upp");
     JLabel avatarLabel = new JLabel("url för avatar");
+    JLabel blankLabel = new JLabel(" ");//hjälpkomponent för att få till rätt layout på commandPanel
 
     JPanel gamePanel = new JPanel();
     JPanel alternativesPanel = new JPanel();
@@ -50,12 +52,10 @@ public class Client extends JFrame implements ActionListener {
 
 
     JPanel chatPanel = new JPanel();
-    JTextArea chatArea = new JTextArea(8,33);
-    JScrollPane sp   = new JScrollPane(chatArea,
+    JTextArea chatArea = new JTextArea(8, 33);
+    JScrollPane sp = new JScrollPane(chatArea,
             JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     JTextField textField = new JTextField(33);
-
-
 
     ObjectInputStream ObjIn;
     ObjectOutputStream ObjOut;
@@ -64,9 +64,9 @@ public class Client extends JFrame implements ActionListener {
     static String opponentPlayerName;           //slippa hämta namnet om och om igen?
 
     List<String> questionList;
-    List<String> scoreList=new ArrayList<>();
+    List<String> scoreList = new ArrayList<>();
 
-    int roundsPerGame =0;
+    int roundsPerGame = 0;
     int roundsPlayed = 0;
 
     int questionsPerRound = 0; // För att hålla reda på när sista frågan är ställd så vi kan
@@ -79,19 +79,17 @@ public class Client extends JFrame implements ActionListener {
 
     static int Command_newGame = 1;
     static int Command_newRound = 2;
-    static int Command_midRound = 3;    //anv för att kunna uppdatera commandPanel under en rundas gång
+    static int Command_finalResult = 3;    //anv för att kunna uppdatera commandPanel till att visa slutresultat
     static int Command_surrender = -1;
 
-    List<Object> commandObjectsList = new ArrayList<>();    //anv för att placera ut knappar o avatar på korrekta ställen i commandPanel
 
-    public  Client () throws IOException {
+    public Client() throws IOException {
 
         try {
             Socket socket = new Socket("127.0.0.1", 8902);
             ObjOut = new ObjectOutputStream(socket.getOutputStream());
             ObjIn = new ObjectInputStream(socket.getInputStream());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -99,13 +97,14 @@ public class Client extends JFrame implements ActionListener {
 
         ObjOut.writeObject(playerName);
 
-        setCommandObjectsList(-1);
         buildGUI();
 
     }
+
     public void buildGUI() {
         setTitle("Quizzkampen - " + playerName);
         setLayout(new BorderLayout());
+
         add(buildCommandPanel(), BorderLayout.NORTH);
         add(buildGamePanel(), BorderLayout.CENTER);
         add(buildChatPanel(), BorderLayout.SOUTH);
@@ -113,7 +112,7 @@ public class Client extends JFrame implements ActionListener {
 
         newGameButton.addActionListener(this);
         nextRoundButton.addActionListener(this);
-        surrenderButton.addActionListener(this);    //actionlyssnare för surrender
+        surrenderButton.addActionListener(this);
         showFinalResultButton.addActionListener(this);
         alternativeButton_1.addActionListener(this);
         alternativeButton_2.addActionListener(this);
@@ -128,43 +127,43 @@ public class Client extends JFrame implements ActionListener {
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
-    public void setCommandObjectsList (int command_int){ //1 2 3 -1
-        commandObjectsList.clear();//nollställer listan
-        JLabel empty = new JLabel();
-        if (command_int==-1){//startläge, innan man påbörjat spel samt efter att man tryckt surrender
-            commandObjectsList.add(newGameButton);//newGame
-            commandObjectsList.add(avatarLabel);//avatar
-            commandObjectsList.add(empty);//tom
-        }
-        if (command_int==2){//väntan på att ny rond ska starta
-            commandObjectsList.add(nextRoundButton);//tom
-            commandObjectsList.add(avatarLabel);//avatar
-            commandObjectsList.add(surrenderButton);//surrender
-        }
-        if (command_int==3){//under tiden en rond spelas
-            commandObjectsList.add(empty);//tom
-            commandObjectsList.add(avatarLabel);//avatar
-            commandObjectsList.add(surrenderButton);//surrender
-        }
 
 
+    public void updateCommandComponents (int command_int){
 
+        commandPanel.remove(0);             //tömmer panelen så att den kan ersättas med nya komponenter
+        commandPanel.remove(0);
+        commandPanel.remove(0);
+
+        if (command_int==-1){                            //startläge samt efter att slutresultat visats/surrender
+            commandPanel.add(newGameButton,0,0);
+            commandPanel.add(avatarLabel,0,1);
+            commandPanel.add(blankLabel,0,2);
+        }
+        if (command_int==1){                            //medan en rond spelas
+            commandPanel.add(blankLabel,0,0);
+            commandPanel.add(avatarLabel,0,1);
+            commandPanel.add(surrenderButton,0,2);
+        }
+        if (command_int==2){                            //när en rond är klar
+            commandPanel.add(nextRoundButton,0,0);
+            commandPanel.add(avatarLabel,0,1);
+            commandPanel.add(surrenderButton,0,2);
+        }
+        if (command_int==3){                            //när hela spelet är klart
+            commandPanel.add(blankLabel,0,0);
+            commandPanel.add(avatarLabel,0,1);
+            commandPanel.add(showFinalResultButton,0,2);
+        }
     }
 
     public JPanel buildCommandPanel() {
+        commandPanel.setLayout(new GridLayout(1, 3, 4, 4));
 
-        //commandPanel.setLayout(new FlowLayout());
-        commandPanel.setLayout(new GridLayout(1,3,4,4));
+        commandPanel.add(newGameButton);
+        commandPanel.add(avatarLabel);
+        commandPanel.add(blankLabel);
 
-        commandPanel.add((Component) commandObjectsList.get(0),LEFT_ALIGNMENT);
-        commandPanel.add((Component) commandObjectsList.get(1), CENTER_ALIGNMENT);
-        commandPanel.add((Component) commandObjectsList.get(2), RIGHT_ALIGNMENT);
-        newGameButton.setVisible(true);
-        nextRoundButton.setVisible(false);// knappen syns inte
-        surrenderButton.setVisible(false);
-   //     newGameButton.setEnabled(true); //knappen är aktiv och kan tryckas ner
-     //   nextRoundButton.setEnabled(false); //knappen syns, men kan inte tryckas ner
-       // surrenderButton.setEnabled(false);
         return commandPanel;
     }
 
@@ -190,7 +189,7 @@ public class Client extends JFrame implements ActionListener {
     public JPanel buildChatPanel() {
         chatPanel.setLayout(new BorderLayout());
         chatArea.setEditable(false);
-        DefaultCaret caret = (DefaultCaret)chatArea.getCaret();  // Dessa två rader sätter uppdateringspolicy för
+        DefaultCaret caret = (DefaultCaret) chatArea.getCaret();  // Dessa två rader sätter uppdateringspolicy för
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);      // Scrollpane så nedersta raden visas
 
         sp.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS); //alt VERTICAL_SCROLLBAR_AS_NEEDED
@@ -202,23 +201,8 @@ public class Client extends JFrame implements ActionListener {
 
     public void setUpQuestion(List<String> list) { // Titlar sätts från fråge-listan
 
-       // nextRoundButton.setEnabled(false); //knappen kan inte tryckas på medan ronden pågår
-        nextRoundButton.setVisible(false);
+        updateCommandComponents(Command_newGame);
 
-    /*    alternativeButton_1.setBackground(Color.lightGray); //färg på knapparna i grundläget
-        alternativeButton_2.setBackground(Color.lightGray);
-        alternativeButton_3.setBackground(Color.lightGray);//myButton.setBackground(null) ger default-färgen
-        alternativeButton_4.setBackground(Color.lightGray);
-
-        alternativeButton_1.setBackground(null);
-        alternativeButton_2.setBackground(null);
-        alternativeButton_3.setBackground(null);
-        alternativeButton_4.setBackground(null);
-*/
-        alternativeButton_1.setOpaque(true);
-        alternativeButton_2.setOpaque(true);
-        alternativeButton_3.setOpaque(true);
-        alternativeButton_4.setOpaque(true);
         alternativesPanel.setVisible(true);
         alternativeButton_1.setText(list.get(0));
         alternativeButton_2.setText(list.get(1));
@@ -230,31 +214,29 @@ public class Client extends JFrame implements ActionListener {
     }
 
 
-    public void newRound (String roundResult){
+    public void newRound(String roundResult) {
         if (roundsPlayed < roundsPerGame) {             // Om inte spelet är klart
+
+            updateCommandComponents(Command_newRound);
+
             questionLabel.setText(roundResult);
-            //gamePanel.add(nextRoundButton);
-            nextRoundButton.setEnabled(true);           //knappen blir tilgänglig
-            nextRoundButton.setVisible(true);           //knappen synlig
             repaint();
             revalidate();
         }
         if (roundsPlayed == roundsPerGame) {            // om spelet är klart
-            questionLabel.setText(roundResult);         // visa rondresultat och ny knapp för hela spelets resultat
 
-            commandPanel.add(showFinalResultButton, CENTER_ALIGNMENT);
-            nextRoundButton.setVisible(false);
-            surrenderButton.setVisible(false);
+            updateCommandComponents(Command_finalResult);
+            questionLabel.setText(roundResult);         // visa rondresultat och ny knapp för hela spelets resultat
             repaint();
             revalidate();
         }
     }
 
-    public void waitForOpponent(){                          // Båda spelare hoppar hit efter en klar ronda
-        //gamePanel.remove(alternativeButton_1);                 // men spleare 2 hinner inte se detta innan GUI uppdatera igen
-        //gamePanel.remove(alternativeButton_2);                 // då resultatlistan kommer in
-        //gamePanel.remove(alternativeButton_3);
-        //gamePanel.remove(alternativeButton_4);
+    public void waitForOpponent() {                          // Båda spelare hoppar hit efter en klar ronda
+        //alternativesPanel.remove(alternativeButton_1);                 // men spleare 2 hinner inte se detta innan GUI uppdatera igen
+        //alternativesPanel.remove(alternativeButton_2);                 // då resultatlistan kommer in
+        //alternativesPanel.remove(alternativeButton_3);
+        //alternativesPanel.remove(alternativeButton_4);
         alternativesPanel.setVisible(false);                //döljer panelen med knapparna
         questionLabel.setText("Väntar på motspelare");
         repaint();
@@ -313,26 +295,26 @@ public class Client extends JFrame implements ActionListener {
             e.printStackTrace();
         }
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
 
             if (e.getSource() == textField) {
-                ObjOut.writeObject((String) playerName + ": "+textField.getText().trim());
+                ObjOut.writeObject((String) playerName + ": " + textField.getText().trim());
                 ObjOut.flush();
                 textField.setText("");
             }
             if (e.getSource() == newGameButton) {                   // triggar handler att skicka lista med frågor
 
-                newGameButton.setVisible(false);                    //knappen osynlig resten av spelet
-                surrenderButton.setVisible(true);                   //knappen blir synlig resten av spelet
 
                 ObjOut.writeObject((int) Command_newGame);
                 ObjOut.flush();
 
             }
-            if (e.getSource()== nextRoundButton){                   //trigga handler att skicka nästa lista med frågor
-               // gamePanel.remove(nextRoundButton);
+            if (e.getSource() == nextRoundButton) {                   //trigga handler att skicka nästa lista med frågor
+
+
                 repaint();
                 revalidate();
                 ObjOut.writeObject((int) Command_newRound);
@@ -341,12 +323,12 @@ public class Client extends JFrame implements ActionListener {
 
             if (e.getSource() == showFinalResultButton) {       //Plocka bort alla knappar och skriva ut scorelist
                 gamePanel.remove(showFinalResultButton);        // ända sättet att få ny rad i JLabel är tydligen HTML
-                String finalResult = "<html>" + "<center>"+"Resultat:"+"</center>"+
-                        "<br>"+playerName +": &emsp; &emsp;"+opponentPlayerName+":";
+                String finalResult = "<html>" + "<center>" + "Resultat:" + "</center>" +
+                        "<br>" + playerName + ": &emsp; &emsp;" + opponentPlayerName + ":";
                 for (String s : scoreList) {                    // Hämtar resultat från ScoreList
-                    finalResult = finalResult + "<br>"+"<center>"+s+"</center>";
+                    finalResult = finalResult + "<br>" + "<center>" + s + "</center>";
                 }
-                finalResult = finalResult +"</html>";
+                finalResult = finalResult + "</html>";
                 questionLabel.setText(finalResult);
 
                 newGameButton.setVisible(true);             //visa knappen igen för att se om mann vill starta ett nytt spel dock så startas inte nytt spel när den trycks in
@@ -354,7 +336,7 @@ public class Client extends JFrame implements ActionListener {
                 repaint();
                 revalidate();
             }
-            if (e.getSource() == surrenderButton){
+            if (e.getSource() == surrenderButton) {
 
                 ObjOut.writeObject((int) Command_surrender);
                 ObjOut.flush();
@@ -364,7 +346,7 @@ public class Client extends JFrame implements ActionListener {
 
             if ((e.getSource() == alternativeButton_1) || (e.getSource() == alternativeButton_2)
                     || (e.getSource() == (alternativeButton_3)) || (e.getSource() == (alternativeButton_4))) {
-                JButton button = (JButton)e.getSource();
+                JButton button = (JButton) e.getSource();
                 String answer = button.getText();
 
                 questionsAnswered++;
@@ -385,7 +367,7 @@ public class Client extends JFrame implements ActionListener {
                     ObjOut.flush();
 
                 }
-                if (!answer.equalsIgnoreCase(questionList.get(5))){
+                if (!answer.equalsIgnoreCase(questionList.get(5))) {
 
                     button.setBackground(Color.RED);
                     repaint();
@@ -397,12 +379,11 @@ public class Client extends JFrame implements ActionListener {
                     ObjOut.writeObject((Boolean) correctAnswer);
                     ObjOut.flush();
                 }
-                if (questionsAnswered == questionsPerRound){  // Om man svarat antal frågor per runda
+                if (questionsAnswered == questionsPerRound) {  // Om man svarat antal frågor per runda
                     waitForOpponent();                      // innan motståndare får man vänta på listan
                 }
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
