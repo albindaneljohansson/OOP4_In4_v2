@@ -10,20 +10,19 @@ public class Game {
 
     int player1_gameScore = 0;
     int player2_gameScore = 0;
-
     final int numberOfRounds;
     final int QuestionsPerRound;
 
+    DataBase_v2 db;
+
     List<Questions> oneRoundList = new ArrayList<>();
-
     List<List<Questions>> fullGameList = new ArrayList<>();
-
     List<String> categories = new ArrayList<>();
 
-    String pathToQuestionFile = "src/questionfile.txt";
+
     public Game (){
         Properties properties = new Properties();
-        DataBase.fileReaderToList(pathToQuestionFile);
+       // DataBase.fileReaderToList(pathToQuestionFile);
         try {
             properties.load(new FileInputStream("src/Game.properties"));
         } catch (FileNotFoundException e) {
@@ -31,15 +30,16 @@ public class Game {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        String roundsString = properties.getProperty("numRounds", String.valueOf(6));//=2 just nu
+
+
+        String roundsString = properties.getProperty("numRounds");
         this.numberOfRounds= Integer.parseInt(roundsString);
-        String questionsString = properties.getProperty("questionsPerRound", String.valueOf(3));//=2 just nu
+        String questionsString = properties.getProperty("questionsPerRound");
         this.QuestionsPerRound = Integer.parseInt(questionsString);
 
-        categories=List.of("cities", "movies");
+        categories=List.of("Geografi", "Film", "Mat och Dryck", "Naturvetenskap","TV och Dator-spel", "Musik");
     }
 
-    // Returnerar ett questionsobject med så många frågor man efterfrågar i setQuestions
 
     //returnerar en lista med samtliga questions för den specifika ronden
     public List<Questions> getOneRoundList(int roundNumber) {
@@ -49,20 +49,31 @@ public class Game {
     // setter för antalet frågor + kategori i ett spel
     private List<Questions> setOneRoundList(String category) {
         List<Questions> oneRoundList = new ArrayList<>();
-        for (int i = 0; i< QuestionsPerRound; i++) {
-            Questions q = new Questions(category, QuestionsPerRound, numberOfRounds); // Skickar med frågot per round så clienten vet
-            oneRoundList.add(q);
-        }
+        int j=0;
+        while (oneRoundList.size() <= numberOfRounds) {
+            Questions q = new Questions(category, QuestionsPerRound, numberOfRounds); // Skickar med antal frågor och ronder
+                if (oneRoundList.size() > 0) {             // Lägger endast till en ny fråga om den inte finns i oneRoundList
+                    if(!q.getQuestionsAndAnswersList().get(4).equalsIgnoreCase(oneRoundList.get(j).getQuestionsAndAnswersList().get(4))) {
+                        oneRoundList.add(q);
+                        j++;
+                        }
+                }
+                if (oneRoundList.size() == 0){
+                    oneRoundList.add(q);
+                }
+            }
         return oneRoundList;
     }
 
     public List<List<Questions>> getFullGameList() {
         return fullGameList;
     }
-
+    // Anropar setOneRoundList och skapar så många ronder samt frågor per rond som anges i properties
+    // Skickar med Shufflade categories för varje runda
+    // Varje rond har alltså samma kategori
     public void setFullGameList() {
         List<String> copyCat = new ArrayList<>(categories);
-        Collections.shuffle(copyCat);
+        Collections.shuffle(copyCat);                       //Shuffla innan gör att vi aldrig får samma kategori 2ggr/spel
         for (int i = 0; i < numberOfRounds; i++) {
             List<Questions> temp = new ArrayList<>();
             temp = setOneRoundList(copyCat.get(i));
@@ -71,14 +82,12 @@ public class Game {
 
     }
     public int getQuestionsPerRound() {
-
         return QuestionsPerRound;
     }
 
     public int getNumberOfRounds() {
         return numberOfRounds;
     }
-
 
     public void setGameScore (int playerNumber, int roundScore) {
         if (playerNumber == 1) {

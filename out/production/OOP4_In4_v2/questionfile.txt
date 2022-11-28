@@ -6,13 +6,13 @@ Film;Vem skrev filmmusiken till filmen Interstellar från 2014;Hans Zimmer;Vange
 Film;Vem spelar den manliga huvudrollen Neo i The Matrix från 1999?;Keanu Reeves;Christian Bale;Heath Ledger;Hugh Grant
 Film;Vem spelar Batman i filmen The Batman från 2022?;Robert Pattinson;Christian Bale;Robert Downey Jr.;Keanu Reeves
 Film;Vem regisserade filmen Det stora blå från 1988?;Luc Besson;Jean Reno;Christopher Lambert;Krzysztof Kieslowski
-Mat och Dryck;Vilken ingrediens ingår INTE i en klassisk italiensk carbonara;Grädde;Ost;Ägg,Svartpeppar
+Mat och Dryck;Vilken ingrediens ingår INTE i en klassisk italiensk carbonara;Grädde;Ost;Ägg;Svartpeppar
 Mat och Dryck;Ett annat och gammalt namn för honungsvin?;Mjöd;Öl;Fläderblomsvin;Nektar
 Mat och Dryck;Känd arg kock från TV;Gordon Ramsay;Jamie Oliver;Nigella Lawson;Tina Nordström;
 Mat och Dryck;Vilket är den äldsta sortens vete?;Enkorn;Emmer;Dinkel;Durum
 Naturvetenskap;Vilken kemisk tecken har guld?;Au;Ag;Al;Ar
 Naturvetenskap;Ett annat ord för att klyva atomer?;Fission;Fusion;Fascination;Emulsion
-Naturvetenskap;Vilket är det lättaste grundämnet?;Väte;Helium;Neon,Kväve
+Naturvetenskap;Vilket är det lättaste grundämnet?;Väte;Helium;Neon;Kväve
 Naturvetenskap;Vilken är den näst minsta planeten i vårt solsystem?;Mars;Merkurius;Venus;Jorden
 TV och Dator-spel;Vad är Sonic för sorts djur?;Igelkott;Gorilla;Ekorre;Kanin
 TV och Dator-spel;Vilket är världens mest köpta dator-spel?;Minecraft;Tetris;Pac-man;GTA V

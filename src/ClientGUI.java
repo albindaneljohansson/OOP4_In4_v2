@@ -253,13 +253,11 @@ public class ClientGUI extends JFrame implements ActionListener {
                     ObjOut.flush();
                 }
                 button.setBackground(bColor);//färgen sätts efter om svaret var rätt/fel
-
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-
 
     public static void main(String[] args) throws IOException {
         ClientGUI c = new ClientGUI();

@@ -14,8 +14,6 @@ public class ServerListenerA {
                 Handler player_1 = new Handler(listener.accept(), game, 1);
                 Handler player_2 = new Handler(listener.accept(), game,2);
 
-
-
                 player_1.setOpponent(player_2);
                 player_2.setOpponent(player_1);
                 player_1.start();
