@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /** questionsAndAnswersList:
  * Alternativ index 0-3
@@ -16,7 +15,7 @@ public class Questions {
 
     public Questions(String category, int questionsPerRound, int roundsPerGame) {
         this.category=category;
-        DataBase db = new DataBase(category);
+        DataBase_v2 db = new DataBase_v2(category);
         List<String> tempList = new ArrayList<>(db.getAlternatives());
         this.questionsAndAnswersList = tempList;
         questionsAndAnswersList.add(db.getQuestion());

@@ -13,7 +13,7 @@ public class Game {
     final int numberOfRounds;
     final int QuestionsPerRound;
 
-    DataBase db;
+    DataBase_v2 db;
 
     List<Questions> oneRoundList = new ArrayList<>();
     List<List<Questions>> fullGameList = new ArrayList<>();
