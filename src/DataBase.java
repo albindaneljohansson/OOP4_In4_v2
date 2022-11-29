@@ -2,17 +2,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class DataBase_v2 {
+public class DataBase {
     String category;
     List<String> oneQuestionList = new ArrayList<>();
-
     String pathToQuestionFile = "src/questionfile.txt";
 
-    public DataBase_v2(String category){
+    public DataBase(String category){
         this.category=category;
         fileReaderToList();
     }
-
 
     public String getAnswer() {
         return oneQuestionList.get(2);
@@ -26,9 +24,7 @@ public class DataBase_v2 {
         for (int i = 2; i<=5; i++){                     // Shufflar alternativen i oneQuestionList
             listOf4.add(oneQuestionList.get(i));
         }
-        //listOf4.add(getAnswer());
         Collections.shuffle(listOf4);
-
         return listOf4;
     }
 

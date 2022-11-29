@@ -21,9 +21,6 @@ public class Handler extends Thread {
 
     int roundScore = 0;     //sammanställning av poäng per rond
 
-    int tempRound;
-
-    List<Questions> handlerQuestionList = new ArrayList<>();
     List<Questions> currentQuestionList = new ArrayList<>();
 
 
@@ -64,18 +61,17 @@ public class Handler extends Thread {
         return opponent;
     }
 
-    public int getPlayerNumber() {
-        return playerNumber;
-    }
-
-    public String getPlayerName() {
-        return playerName;
-    }
-
     public void run() {
         try {
             ObjOut.writeObject((String) "Opponent connected!");
             ObjOut.writeObject((String) "You are playing against: " + opponent.playerName);
+            ObjOut.flush();
+
+            String[] opponentPlayerName = new String[]{"1", opponent.playerName};
+            ObjOut.writeObject((String[]) opponentPlayerName);
+            ObjOut.flush();
+
+            ObjOut.writeObject((int) 3);
             ObjOut.flush();
 
             currentQuestionList = game.getOneRoundList(roundsPlayed);
@@ -84,37 +80,29 @@ public class Handler extends Thread {
 
                 if (getOpponent() != null) {                // Denna if-sats villkorar chat och spel till när det finns en opponent
 
+
                     Object objectIn = ObjIn.readObject();
 
                     if (objectIn instanceof Integer) {
                         int command = (int) objectIn;
 
-                        if (command == 1) {            // Första frågan har index 0 eftersom command 1 är nytt spel
+                        if (command == 1) {                 // Första frågan har index 0 eftersom command 1 är nytt spel
                             ObjOut.writeObject(currentQuestionList.get(questionsAsked).questionsAndAnswersList);
                             ObjOut.flush();
                         }
-                        if (command==2){  // Next-roundknappen
+                        if (command == 2){                    // Next-roundknappen
                             roundsPlayed++;
                             questionsAsked = 0;
                             roundScore = 0;
                             currentQuestionList = game.getOneRoundList(roundsPlayed);
                             ObjOut.writeObject(currentQuestionList.get(questionsAsked).questionsAndAnswersList);//ger indexOutOfBounds
                             ObjOut.flush();
-
                         }
 
-                        if (command==-1){ //surrender
-                            ObjOut.writeObject((String) playerName + " gav upp spelet"); //istället skicka nånting helt annat, vill få meddelandet i labeln
+                        if (command == -1){                   //surrender
+                            opponent.ObjOut.writeObject((int) -1);
                             ObjOut.flush();
-                            //om jag inte tänker alldeles galet nu så kommer väl det där meddelandet i chatten?
-                            // man behöver ju kanske också se till att den spelare som inte tryckte på knappen avslutas på ett säkert sätt?
-                            //men det kanske man kan lösa i Client-klassen så att man den bara kollar strängarna som kommer in
-                            // och om det är ett surrendermeddelande så stängs det ner?
-                            //ytterligare en tanke... hur vill man göra med newGame när man har avslutat ett helt spel?
-                            // som det är nu så blir det ju alltid så att det är samma två spelare igen som skulle kunna starta om
                         }
-
-
                     }
 
                     if (objectIn instanceof Boolean) {   // Varje gång clienten svarat på en fråga hoppar vi in här
@@ -123,13 +111,8 @@ public class Handler extends Thread {
 
                         if (correctAnswer) {
                             roundScore++;
-                            ObjOut.writeObject((String) "Rätt svar!");
-                            ObjOut.flush();
                         }
-                        if (!correctAnswer) {
-                            ObjOut.writeObject((String) "Fel svar!");
-                            ObjOut.flush();
-                        }
+
                         questionsAsked++;
 
                         if (questionsAsked < questionsPerRound) {     // Om antalet frågor är mindre än frågor per rond skickar vi nästa fråga

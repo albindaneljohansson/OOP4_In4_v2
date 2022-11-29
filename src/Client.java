@@ -19,6 +19,7 @@ import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
  * <p>
  * 1 - New Game
  * 2 - next Round
+ * 3 - Oppenent ansluten
  * -1 - Surrender
  * <p>
  * resultat i String array:
@@ -135,6 +136,7 @@ public class Client extends JFrame implements ActionListener {
         commandPanel.setLayout(new GridLayout(1, 3, 4, 4));
 
         commandPanel.add(newGameButton);
+        newGameButton.setVisible(false);  // Nytt spel dolt tills oppenent ansluter
         commandPanel.add(avatarLabel);
         commandPanel.add(blankLabel);
 
@@ -204,12 +206,10 @@ public class Client extends JFrame implements ActionListener {
     }
 
     public void setUpQuestion(List<String> list) throws InterruptedException { // Titlar sätts från fråge-listan
-
         updateCommandComponents(Command_newGame);
         if (answerFeedback !=null){
             returnButtonColor();
         }
-
         alternativesPanel.setVisible(true);
         alternativeButton_1.setText(list.get(0));
         alternativeButton_2.setText(list.get(1));
@@ -219,7 +219,6 @@ public class Client extends JFrame implements ActionListener {
         repaint();
         revalidate();
     }
-
 
     public void returnButtonColor() throws InterruptedException {//om vi ska försöka gå tillbaka till att ändra färg på svarsknapparna
         Thread.sleep(1000);
@@ -233,17 +232,13 @@ public class Client extends JFrame implements ActionListener {
     }
 
     public void newRound(String roundResult) {
-
         if (roundsPlayed < roundsPerGame) {             // Om inte spelet är klart
-
             updateCommandComponents(Command_newRound);
-
             questionLabel.setText(roundResult);
             repaint();
             revalidate();
         }
         if (roundsPlayed == roundsPerGame) {            // om spelet är klart
-
             updateCommandComponents(Command_finalResult);
             questionLabel.setText(roundResult);         // visa rondresultat och ny knapp för hela spelets resultat
             repaint();
@@ -251,23 +246,30 @@ public class Client extends JFrame implements ActionListener {
         }
     }
 
-    public void waitForOpponent() throws InterruptedException {                                      // Båda spelare hoppar hit efter en klar ronda
+    public void waitForOpponent() throws InterruptedException {          // Båda spelare hoppar hit efter en klar ronda
         //alternativesPanel.remove(alternativeButton_1);                 // men spleare 2 hinner inte se detta innan GUI uppdatera igen
         //alternativesPanel.remove(alternativeButton_2);                 // då resultatlistan kommer in
         //alternativesPanel.remove(alternativeButton_3);
         //alternativesPanel.remove(alternativeButton_4);
-
-
      //   returnButtonColor();
-
-
-
         alternativesPanel.setVisible(false);                //döljer panelen med knapparna
         questionLabel.setText("Väntar på motspelare");
-
         repaint();
         revalidate();
+    }
 
+    public void opponentSurrender (){
+        alternativesPanel.setVisible(false);
+        nextRoundButton.setVisible(false);
+        showFinalResultButton.setVisible(false);
+        surrenderButton.setVisible(false);
+        newGameButton.setVisible(false);
+        for (int i = 0; i < questionsPerRound; i++) {
+            questionResultPanel.remove(0);
+        }
+        questionLabel.setText(opponentPlayerName + " gav upp spelet. Du vann!");
+        repaint();
+        revalidate();
     }
 
     public void play() {
@@ -295,7 +297,7 @@ public class Client extends JFrame implements ActionListener {
                     if (resultArray[0].equalsIgnoreCase("0")) {
                         questionsAnswered = 0;
                         roundsPlayed++;
-                        opponentPlayerName = resultArray[4];
+
                         String message = "";
 
                         if (Integer.parseInt(resultArray[1]) == 0) {
@@ -310,9 +312,20 @@ public class Client extends JFrame implements ActionListener {
                         scoreList.add(resultArray[3] + "-" + resultArray[5]); // lägger till rondens resultat till en lista
                         newRound(roundResult);                                 // som kan visas i slutet av spelet
                     }
+
+                    if (resultArray[0].equalsIgnoreCase("1")) {
+                        opponentPlayerName = resultArray[1];
+                    }
                 }
-                if (fromServer instanceof Integer) {                    // visa resultat för hela spelet
-                    int command99 = (int) fromServer;                   // här även lägga in för surrender
+                if (fromServer instanceof Integer) {
+                    int inCommand = (int) fromServer;
+                    if (inCommand == -1){
+                        opponentSurrender();
+                    }
+                    if (inCommand == 3) {
+                        newGameButton.setVisible(true);
+
+                    }
                 }
             }
         } catch (Exception e) {
@@ -401,9 +414,7 @@ public class Client extends JFrame implements ActionListener {
   //                  answerFeedback="Fel";
                     repaint();
                     revalidate();
-
                     correctAnswer = false;
-
                     ObjOut.writeObject((Boolean) correctAnswer);
                     ObjOut.flush();
                 }
