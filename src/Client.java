@@ -47,6 +47,7 @@ public class Client extends JFrame implements ActionListener {
     JButton alternativeButton_3 = new JButton(" ");
     JButton alternativeButton_4 = new JButton(" ");
     String answerFeedback;
+    JPanel questionResultPanel = new JPanel();
 
     JPanel questionPanel = new JPanel();
     JLabel questionLabel = new JLabel(" ");
@@ -147,7 +148,8 @@ public class Client extends JFrame implements ActionListener {
         alternativesPanel.setVisible(false);
         questionPanel.add(questionLabel);
         gamePanel.add(questionPanel, BorderLayout.CENTER);
-        //gamePanel.add(answerFeedback,BorderLayout.SOUTH);
+        questionResultPanel.setLayout(new FlowLayout());
+        gamePanel.add(questionResultPanel,BorderLayout.SOUTH);
         return gamePanel;
     }
 
@@ -218,7 +220,8 @@ public class Client extends JFrame implements ActionListener {
         revalidate();
     }
 
-    public void returnButtonColor() throws InterruptedException {
+
+    public void returnButtonColor() throws InterruptedException {//om vi ska försöka gå tillbaka till att ändra färg på svarsknapparna
         Thread.sleep(1000);
         alternativeButton_1.setBackground(null);
         alternativeButton_2.setBackground(null);
@@ -230,6 +233,7 @@ public class Client extends JFrame implements ActionListener {
     }
 
     public void newRound(String roundResult) {
+
         if (roundsPlayed < roundsPerGame) {             // Om inte spelet är klart
 
             updateCommandComponents(Command_newRound);
@@ -258,7 +262,7 @@ public class Client extends JFrame implements ActionListener {
 
 
 
-        //alternativesPanel.setVisible(false);                //döljer panelen med knapparna
+        alternativesPanel.setVisible(false);                //döljer panelen med knapparna
         questionLabel.setText("Väntar på motspelare");
 
         repaint();
@@ -330,15 +334,26 @@ public class Client extends JFrame implements ActionListener {
                 ObjOut.flush();
             }
             if (e.getSource() == nextRoundButton) {                   //trigga handler att skicka nästa lista med frågor
+
+                for (int i = 0; i < questionsPerRound; i++) {
+                    questionResultPanel.remove(0);
+                }
+                repaint();
+                revalidate();
+
                 ObjOut.writeObject((int) Command_newRound);
                 ObjOut.flush();
             }
             if (e.getSource() == showFinalResultButton) {       //Plocka bort alla knappar och skriva ut scorelist
-                                                                // enda sättet att få ny rad i JLabel är tydligen HTML
+
+                for (int i = 0; i < questionsPerRound; i++) {
+                    questionResultPanel.remove(0);
+                }
+                // enda sättet att få ny rad i JLabel är tydligen HTML
                 String finalResult = "<html>" + "<center>" + "Resultat:" + "</center>" +
-                        "<br>" + playerName + ": &emsp; &emsp;" + opponentPlayerName + ":";
+                        playerName + ": &emsp; &emsp;" + opponentPlayerName + ":";
                 for (String s : scoreList) {                    // Hämtar resultat från ScoreList
-                    finalResult = finalResult + "<br>" + "<center>" + s + "</center>";
+                    finalResult = finalResult +  "<center>" + s + "</center>";
                 }
                 finalResult = finalResult + "</html>";
                 questionLabel.setText(finalResult);
@@ -362,28 +377,33 @@ public class Client extends JFrame implements ActionListener {
                 questionsAnswered++;
 
                 if (answer.equalsIgnoreCase(questionList.get(5))) {
-
-                    button.setBackground(Color.GREEN);
-                    answerFeedback="Rätt";
+                    JButton correct = new JButton(String.valueOf(questionsAnswered));
+                    correct.setBackground(Color.GREEN);
+                    questionResultPanel.add(correct);
+                    //  button.setBackground(Color.GREEN);
+                    //answerFeedback="Rätt";
                     //answerFeedback.setText("Rätt svar!");
                     repaint();
                     revalidate();
 
                     correctAnswer = true; //Anna: behövs den här variabeln? varför inte ObjOut.writeObject(true);
                     // och motsvarande i else-satsen
+
                     ObjOut.writeObject((Boolean) correctAnswer);
                     ObjOut.flush();
 
                 }
                 if (!answer.equalsIgnoreCase(questionList.get(5))) {
-
-
-                    button.setBackground(Color.RED);
-                    answerFeedback="Fel";
+                    JButton inCorrect = new JButton(String.valueOf(questionsAnswered));
+                    inCorrect.setBackground(Color.RED);
+                    questionResultPanel.add(inCorrect);
+//                    button.setBackground(Color.RED);
+  //                  answerFeedback="Fel";
                     repaint();
                     revalidate();
 
                     correctAnswer = false;
+
                     ObjOut.writeObject((Boolean) correctAnswer);
                     ObjOut.flush();
                 }
