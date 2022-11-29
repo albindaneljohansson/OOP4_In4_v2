@@ -1,5 +1,8 @@
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
+import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
 /**
  * Object input/outputstream:
@@ -47,15 +51,17 @@ public class Client extends JFrame implements ActionListener {
     JButton alternativeButton_3 = new JButton(" ");
     JButton alternativeButton_4 = new JButton(" ");
     String answerFeedback;
-    JPanel questionResultPanel = new JPanel();
 
     JPanel questionPanel = new JPanel();
     JLabel questionLabel = new JLabel(" ");
-
+    JTextArea resultArea = new JTextArea(8,15);
+    JScrollPane resultScroll = new JScrollPane(resultArea,
+            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    JPanel questionResultPanel = new JPanel();
 
     JPanel chatPanel = new JPanel();
     JTextArea chatArea = new JTextArea(8, 33);
-    JScrollPane sp = new JScrollPane(chatArea,
+    JScrollPane chatScroll = new JScrollPane(chatArea,
             JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     JTextField textField = new JTextField(33);
 
@@ -168,9 +174,9 @@ public class Client extends JFrame implements ActionListener {
         DefaultCaret caret = (DefaultCaret) chatArea.getCaret();  // Dessa två rader sätter uppdateringspolicy för
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);      // Scrollpane så nedersta raden visas
 
-        sp.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS); //alt VERTICAL_SCROLLBAR_AS_NEEDED
+        chatScroll.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS); //alt VERTICAL_SCROLLBAR_AS_NEEDED
 
-        chatPanel.add(sp, BorderLayout.CENTER);
+        chatPanel.add(chatScroll, BorderLayout.CENTER);
         chatPanel.add(textField, BorderLayout.SOUTH);
         return chatPanel;
     }
@@ -335,7 +341,7 @@ public class Client extends JFrame implements ActionListener {
             }
             if (e.getSource() == nextRoundButton) {                   //trigga handler att skicka nästa lista med frågor
 
-                for (int i = 0; i < questionsPerRound; i++) {
+                for (int i = 0; i < questionsPerRound; i++) {       //tar bort föregående ronds rätt/fel-markeringar
                     questionResultPanel.remove(0);
                 }
                 repaint();
@@ -346,9 +352,10 @@ public class Client extends JFrame implements ActionListener {
             }
             if (e.getSource() == showFinalResultButton) {       //Plocka bort alla knappar och skriva ut scorelist
 
-                for (int i = 0; i < questionsPerRound; i++) {
+                for (int i = 0; i < questionsPerRound; i++) {   //tar bort föregående ronds rätt/fel-markeringar
                     questionResultPanel.remove(0);
                 }
+                /*
                 // enda sättet att få ny rad i JLabel är tydligen HTML
                 String finalResult = "<html>" + "<center>" + "Resultat:" + "</center>" +
                         playerName + ": &emsp; &emsp;" + opponentPlayerName + ":";
@@ -357,6 +364,18 @@ public class Client extends JFrame implements ActionListener {
                 }
                 finalResult = finalResult + "</html>";
                 questionLabel.setText(finalResult);
+
+                 */
+                questionPanel.remove(questionLabel);
+
+                resultArea.append("Slutresultat: \n" + playerName + " - " + opponentPlayerName);
+                for (String s : scoreList) {
+                    resultArea.append("\n"+s);
+                }
+
+                questionPanel.add(resultScroll,BorderLayout.CENTER);
+
+
 
                 repaint();
                 revalidate();
