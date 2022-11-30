@@ -266,9 +266,7 @@ public class Client extends JFrame implements ActionListener {
         showFinalResultButton.setVisible(false);
         surrenderButton.setVisible(false);
         newGameButton.setVisible(false);
-        for (int i = 0; i < questionsAnswered; i++) {
-            questionResultPanel.remove(0);
-        }
+        questionResultPanel.setVisible(false);
         questionLabel.setText(opponentPlayerName + " gav upp spelet. Du vann!");
         repaint();
         revalidate();

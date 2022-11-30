@@ -41,10 +41,10 @@ public class Game {
     }
 
     // setter för antalet frågor + kategori i ett spel
-    private List<Questions> setOneRoundList(String category) {
+    private List<Questions> setOneRoundList(String category) { // Vill skapa en lista med unika frågor för EN rond
         List<Questions> tempOneRoundList = new ArrayList<>();
 
-        while (tempOneRoundList.size() <= numberOfRounds) {
+        while (tempOneRoundList.size() <= getQuestionsPerRound()) {
             Questions q = new Questions(category, QuestionsPerRound, numberOfRounds); // Skickar med antal frågor och ronder
             int counter=0;
             if (tempOneRoundList.size() > 0) {

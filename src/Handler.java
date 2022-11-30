@@ -119,6 +119,10 @@ public class Handler extends Thread {
 
                                 while ((opponent.questionsAsked < questionsPerRound) || (opponent.roundsPlayed < roundsPlayed)) { //Väntar på oppenent
                                     Thread.sleep(100);                                                          // Både för i round och för varje round
+                                        if (command == -1) {                   //surrender
+                                            opponent.ObjOut.writeObject((int) -1);
+                                            ObjOut.flush();
+                                        }
                                 }
                                 String[] resultArray = new String[6];
                                 String result = "";
