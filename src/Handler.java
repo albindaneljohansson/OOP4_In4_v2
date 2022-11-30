@@ -43,8 +43,11 @@ public class Handler extends Thread {
             this.numberOfRounds = game.getNumberOfRounds();         // Vi måste sätta antalet rounds för båda spelare
             this.questionsPerRound = game.getQuestionsPerRound();
 
-            ObjOut.writeObject((String) "Welcome " + playerName);
-            ObjOut.writeObject((String) "Waiting for an opponent to connect...");
+            ObjOut.writeObject((String) "Välkommen " + playerName);
+
+            if (playerNumber == 1) {
+                ObjOut.writeObject((String) "Väntar på en motspelare...");
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -63,8 +66,10 @@ public class Handler extends Thread {
 
     public void run() {
         try {
-            ObjOut.writeObject((String) "Opponent connected!");
-            ObjOut.writeObject((String) "You are playing against: " + opponent.playerName);
+            if (playerNumber == 1) {
+                ObjOut.writeObject((String) "Motspelare ansluten!");
+            }
+            ObjOut.writeObject((String) "Du spelar mot: " + opponent.playerName);
             ObjOut.flush();
 
             String[] opponentPlayerName = new String[]{"1", opponent.playerName};
