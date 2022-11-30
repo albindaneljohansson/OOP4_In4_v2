@@ -445,13 +445,19 @@ public class Client extends JFrame implements ActionListener {
 
         String playerName = JOptionPane.showInputDialog(null, "Ange ditt namn").toUpperCase().trim();
 
+        Client client = new Client(playerName);
+        client.play();
+
         while (true) {
-            Client client = new Client(playerName);
-            client.play();
 
             int playAgain = JOptionPane.showConfirmDialog(null, "Vill du starta ett nytt spel?", "Quizzkampen",
                     JOptionPane.YES_NO_OPTION);
 
+            if (playAgain == 0){
+                client.dispose();
+                client = new Client(playerName);
+                client.play();
+            }
             if (playAgain != 0) {
                 System.exit(0);
             }
