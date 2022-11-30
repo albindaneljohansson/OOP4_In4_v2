@@ -77,6 +77,10 @@ public class Client extends JFrame implements ActionListener {
     //plocka bort frågeknappar medan vi väntar
     int questionsAnswered = 0;
 
+    int totalGameScore =0;
+    int opponentTotalGameScore =0;
+
+
 
     //boolean win;
    // boolean correctAnswer;
@@ -314,6 +318,8 @@ public class Client extends JFrame implements ActionListener {
                         String roundResult = (message + "Du fick " + resultArray[3] + " poäng. " +
                                 resultArray[4] + " fick " + resultArray[5] + " poäng!");
                         scoreList.add(resultArray[3] + "-" + resultArray[5]); // lägger till rondens resultat till en lista
+                        totalGameScore = totalGameScore+Integer.parseInt(resultArray[3]);
+                        opponentTotalGameScore = opponentTotalGameScore+Integer.parseInt(resultArray[5]);
                         newRound(roundResult);                                 // som kan visas i slutet av spelet
                     }
 
@@ -371,13 +377,24 @@ public class Client extends JFrame implements ActionListener {
                 for (int i = 0; i < questionsPerRound; i++) {
                     questionResultPanel.remove(0);
                 }
+
+                String winner = "";
+                if (totalGameScore > opponentTotalGameScore) {
+                    winner = "Du vann!";
+                }
+                if (totalGameScore < opponentTotalGameScore) {
+                    winner = opponentPlayerName + " vann!";
+                }
+                if (totalGameScore == opponentTotalGameScore) {
+                    winner = "Oavgjort!";
+                }
                 // enda sättet att få ny rad i JLabel är tydligen HTML
-                String finalResult = "<html>" + "<center>" + "Resultat:" + "</center>" +
-                        playerName + ": &emsp; &emsp;" + opponentPlayerName + ":";
+                String finalResult = "<html>" +"<center>" +"Resultat: " + winner + "</center>" +
+                        playerName + ": &emsp; &emsp; " + opponentPlayerName + ":";
                 for (String s : scoreList) {                    // Hämtar resultat från ScoreList
                     finalResult = finalResult +  "<center>" + s + "</center>";
                 }
-                finalResult = finalResult + "</html>";
+                finalResult = finalResult + "Totalt:   "+totalGameScore+"-"+opponentTotalGameScore+"</html>";
                 questionLabel.setText(finalResult);
 
                 repaint();
