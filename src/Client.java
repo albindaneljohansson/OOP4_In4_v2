@@ -77,13 +77,15 @@ public class Client extends JFrame implements ActionListener {
     int questionsAnswered = 0;
 
 
-    boolean win;
-    boolean correctAnswer;
+    //boolean win;
+   // boolean correctAnswer;
 
-    static int Command_newGame = 1;
-    static int Command_newRound = 2;
-    static int Command_finalResult = 3;    //anv för att kunna uppdatera commandPanel till att visa slutresultat
-    static int Command_surrender = -1;
+    final static int COMMAND_NEW_GAME = 1;      //Commands att skicka till handlern (alltid int när det inte är till chatten)
+    final static int COMMAND_NEXT_ROUND = 2;
+    final static int COMMAND_FINAL_RESULT = 3;
+    final static int COMMAND_SURRENDER = -1;
+    final static int COMMAND_CORRECT = 10;
+    final static int COMMAND_INCORRECT = 11;
 
 
     public Client() throws IOException {
@@ -206,7 +208,7 @@ public class Client extends JFrame implements ActionListener {
     }
 
     public void setUpQuestion(List<String> list) throws InterruptedException { // Titlar sätts från fråge-listan
-        updateCommandComponents(Command_newGame);
+        updateCommandComponents(COMMAND_NEW_GAME);
         if (answerFeedback !=null){
             returnButtonColor();
         }
@@ -233,13 +235,13 @@ public class Client extends JFrame implements ActionListener {
 
     public void newRound(String roundResult) {
         if (roundsPlayed < roundsPerGame) {             // Om inte spelet är klart
-            updateCommandComponents(Command_newRound);
+            updateCommandComponents(COMMAND_NEXT_ROUND);
             questionLabel.setText(roundResult);
             repaint();
             revalidate();
         }
         if (roundsPlayed == roundsPerGame) {            // om spelet är klart
-            updateCommandComponents(Command_finalResult);
+            updateCommandComponents(COMMAND_FINAL_RESULT);
             questionLabel.setText(roundResult);         // visa rondresultat och ny knapp för hela spelets resultat
             repaint();
             revalidate();
@@ -343,7 +345,7 @@ public class Client extends JFrame implements ActionListener {
                 textField.setText("");
             }
             if (e.getSource() == newGameButton) {                   // triggar handler att skicka lista med frågor
-                ObjOut.writeObject((int) Command_newGame);
+                ObjOut.writeObject((int) COMMAND_NEW_GAME);
                 ObjOut.flush();
             }
             if (e.getSource() == nextRoundButton) {                   //trigga handler att skicka nästa lista med frågor
@@ -354,7 +356,7 @@ public class Client extends JFrame implements ActionListener {
                 repaint();
                 revalidate();
 
-                ObjOut.writeObject((int) Command_newRound);
+                ObjOut.writeObject((int) COMMAND_NEXT_ROUND);
                 ObjOut.flush();
             }
             if (e.getSource() == showFinalResultButton) {       //Plocka bort alla knappar och skriva ut scorelist
@@ -376,7 +378,7 @@ public class Client extends JFrame implements ActionListener {
             }
             if (e.getSource() == surrenderButton) {
 
-                ObjOut.writeObject((int) Command_surrender);
+                ObjOut.writeObject((int) COMMAND_SURRENDER);
                 ObjOut.flush();
 
                 System.exit(0); //rätt sätt att ge upp? kanske bättre med att kunna välja newGame?
@@ -397,10 +399,10 @@ public class Client extends JFrame implements ActionListener {
                     repaint();
                     revalidate();
 
-                    correctAnswer = true; //Anna: behövs den här variabeln? varför inte ObjOut.writeObject(true);
+                  //  correctAnswer = true; //Anna: behövs den här variabeln? varför inte ObjOut.writeObject(true);
                     // och motsvarande i else-satsen
 
-                    ObjOut.writeObject((Boolean) correctAnswer);
+                    ObjOut.writeObject((int) COMMAND_CORRECT);
                     ObjOut.flush();
 
                 }
@@ -412,8 +414,8 @@ public class Client extends JFrame implements ActionListener {
   //                  answerFeedback="Fel";
                     repaint();
                     revalidate();
-                    correctAnswer = false;
-                    ObjOut.writeObject((Boolean) correctAnswer);
+                    //correctAnswer = false;
+                    ObjOut.writeObject((int) COMMAND_INCORRECT);
                     ObjOut.flush();
                 }
                 if (questionsAnswered == questionsPerRound) {  // Om man svarat antal frågor per runda

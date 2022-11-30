@@ -86,6 +86,10 @@ public class Handler extends Thread {
                     if (objectIn instanceof Integer) {
                         int command = (int) objectIn;
 
+                        if (command == -1){                   //surrender
+                            opponent.ObjOut.writeObject((int) -1);
+                            ObjOut.flush();
+                        }
                         if (command == 1) {                 // Första frågan har index 0 eftersom command 1 är nytt spel
                             ObjOut.writeObject(currentQuestionList.get(questionsAsked).questionsAndAnswersList);
                             ObjOut.flush();
@@ -99,53 +103,45 @@ public class Handler extends Thread {
                             ObjOut.flush();
                         }
 
-                        if (command == -1){                   //surrender
-                            opponent.ObjOut.writeObject((int) -1);
-                            ObjOut.flush();
-                        }
-                    }
+                        if (command >= 10) {   // Varje gång clienten svarat på en fråga hoppar vi in här
 
-                    if (objectIn instanceof Boolean) {   // Varje gång clienten svarat på en fråga hoppar vi in här
-
-                        boolean correctAnswer = (boolean) objectIn;
-
-                        if (correctAnswer) {
-                            roundScore++;
-                        }
-
-                        questionsAsked++;
-
-                        if (questionsAsked < questionsPerRound) {     // Om antalet frågor är mindre än frågor per rond skickar vi nästa fråga
-                            ObjOut.writeObject(currentQuestionList.get(questionsAsked).questionsAndAnswersList);
-                            ObjOut.flush();
-                        }
-
-                        if (questionsAsked == questionsPerRound) {      // När alla frågor är besvarade i en round
-
-                            while ((opponent.questionsAsked < questionsPerRound) || (opponent.roundsPlayed < roundsPlayed)) { //Väntar på oppenent
-                                Thread.sleep(100);                                                          // Både för i round och för varje round
+                            if (command==10) {  //rätt svar
+                                roundScore++;
                             }
-                            String[] resultArray = new String[6];
-                            String result = "";
+                            questionsAsked++;
 
-                            if (roundScore > opponent.roundScore) {
-                                result = "0";
-                            }
-                            if (roundScore < opponent.roundScore) {
-                                result = "1";
-                            }
-                            if (roundScore == opponent.roundScore) {
-                                result = "2";
-                            }
-                            resultArray = new String[]{"0", result, playerName, String.valueOf(roundScore), opponent.playerName, String.valueOf(opponent.roundScore)};
-                            ObjOut.writeObject((String[]) resultArray);
-                            ObjOut.flush();
-
-                            game.setGameScore(playerNumber, roundScore); // plussa på poäng per runda i Game
-
-                            if (roundsPlayed == numberOfRounds) {   // när runderna är slut, skicka till client att visa gameresult
-                                ObjOut.writeObject((Integer) 99);        // command 99 = hos client: visa gameresult-lista
+                            if (questionsAsked < questionsPerRound) {     // Om antalet frågor är mindre än frågor per rond skickar vi nästa fråga
+                                ObjOut.writeObject(currentQuestionList.get(questionsAsked).questionsAndAnswersList);
                                 ObjOut.flush();
+                            }
+
+                            if (questionsAsked == questionsPerRound) {      // När alla frågor är besvarade i en round
+
+                                while ((opponent.questionsAsked < questionsPerRound) || (opponent.roundsPlayed < roundsPlayed)) { //Väntar på oppenent
+                                    Thread.sleep(100);                                                          // Både för i round och för varje round
+                                }
+                                String[] resultArray = new String[6];
+                                String result = "";
+
+                                if (roundScore > opponent.roundScore) {
+                                    result = "0";
+                                }
+                                if (roundScore < opponent.roundScore) {
+                                    result = "1";
+                                }
+                                if (roundScore == opponent.roundScore) {
+                                    result = "2";
+                                }
+                                resultArray = new String[]{"0", result, playerName, String.valueOf(roundScore), opponent.playerName, String.valueOf(opponent.roundScore)};
+                                ObjOut.writeObject((String[]) resultArray);
+                                ObjOut.flush();
+
+                                game.setGameScore(playerNumber, roundScore); // plussa på poäng per runda i Game
+
+                                if (roundsPlayed == numberOfRounds) {   // när runderna är slut, skicka till client att visa gameresult
+                                    ObjOut.writeObject((Integer) 99);        // command 99 = hos client: visa gameresult-lista
+                                    ObjOut.flush();
+                                }
                             }
                         }
                     }
