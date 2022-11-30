@@ -80,10 +80,11 @@ public class Client extends JFrame implements ActionListener {
     //boolean win;
    // boolean correctAnswer;
 
+    final static int COMMAND_SURRENDER = -1;
+    final static int COMMAND_CLOSE = 0;
     final static int COMMAND_NEW_GAME = 1;      //Commands att skicka till handlern (alltid int när det inte är till chatten)
     final static int COMMAND_NEXT_ROUND = 2;
     final static int COMMAND_FINAL_RESULT = 3;
-    final static int COMMAND_SURRENDER = -1;
     final static int COMMAND_CORRECT = 10;
     final static int COMMAND_INCORRECT = 11;
 
@@ -190,6 +191,12 @@ public class Client extends JFrame implements ActionListener {
             commandPanel.add(avatarLabel,0,1);
             commandPanel.add(blankLabel,0,2);
         }
+        if (command_int==0){                    //Efter att man visat slutresultatet, eller när motståndaren gett upp
+            surrenderButton.setText("Avsluta");
+            commandPanel.add(blankLabel,0,0);
+            commandPanel.add(avatarLabel,0,1);
+            commandPanel.add(surrenderButton,0,2);
+        }
         if (command_int==1){                            //medan en rond spelas
             commandPanel.add(blankLabel,0,0);
             commandPanel.add(avatarLabel,0,1);
@@ -248,12 +255,11 @@ public class Client extends JFrame implements ActionListener {
         }
     }
 
-    public void waitForOpponent() throws InterruptedException {          // Båda spelare hoppar hit efter en klar ronda
-        //alternativesPanel.remove(alternativeButton_1);                 // men spleare 2 hinner inte se detta innan GUI uppdatera igen
-        //alternativesPanel.remove(alternativeButton_2);                 // då resultatlistan kommer in
-        //alternativesPanel.remove(alternativeButton_3);
-        //alternativesPanel.remove(alternativeButton_4);
-     //   returnButtonColor();
+    public void waitForOpponent(){          // Båda spelare hoppar hit efter en klar ronda
+                                            // men spleare 2 hinner inte se detta innan GUI uppdatera igen
+                                            // då resultatlistan kommer in
+
+
         alternativesPanel.setVisible(false);                //döljer panelen med knapparna
         questionLabel.setText("Väntar på motspelare");
         repaint();
@@ -262,10 +268,7 @@ public class Client extends JFrame implements ActionListener {
 
     public void opponentSurrender (){
         alternativesPanel.setVisible(false);
-        nextRoundButton.setVisible(false);
-        showFinalResultButton.setVisible(false);
-        surrenderButton.setVisible(false);
-        newGameButton.setVisible(false);
+        updateCommandComponents(COMMAND_CLOSE);
         questionResultPanel.setVisible(false);
         questionLabel.setText(opponentPlayerName + " gav upp spelet. Du vann!");
         repaint();
@@ -359,6 +362,7 @@ public class Client extends JFrame implements ActionListener {
             }
             if (e.getSource() == showFinalResultButton) {       //Plocka bort alla knappar och skriva ut scorelist
 
+                updateCommandComponents(COMMAND_CLOSE);
                 for (int i = 0; i < questionsPerRound; i++) {
                     questionResultPanel.remove(0);
                 }
