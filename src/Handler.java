@@ -90,6 +90,11 @@ public class Handler extends Thread {
                             opponent.ObjOut.writeObject((int) -1);
                             ObjOut.flush();
                         }
+                        if (command==0){
+                            System.out.println("command==0");
+                            ObjOut.writeObject((int)0);
+                            ObjOut.flush();
+                        }
                         if (command == 1) {                 // Första frågan har index 0 eftersom command 1 är nytt spel
                             ObjOut.writeObject(currentQuestionList.get(questionsAsked).questionsAndAnswersList);
                             ObjOut.flush();

@@ -34,10 +34,11 @@ import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
 public class Client extends JFrame implements ActionListener {
 
     JPanel commandPanel = new JPanel();
-    JButton newGameButton = new JButton("Starta nytt spel");
+    JButton newGameButton = new JButton("Starta spel");
     JButton nextRoundButton = new JButton("Nästa rond");
-    JButton showFinalResultButton = new JButton("Visa spelresultat");
+    JButton showFinalResultButton = new JButton("Slutresultat");
     JButton surrenderButton = new JButton("Ge upp");
+    JButton finishButton = new JButton("Avsluta spel");
     JLabel avatarLabel = new JLabel("url för avatar");
     JLabel blankLabel = new JLabel(" ");//hjälpkomponent för att få till rätt layout på commandPanel
 
@@ -89,7 +90,7 @@ public class Client extends JFrame implements ActionListener {
     final static int COMMAND_INCORRECT = 11;
 
 
-    public Client() throws IOException {
+    public Client(String playerName) throws IOException {
 
         try {
             Socket socket = new Socket("127.0.0.1", 8902);
@@ -99,7 +100,7 @@ public class Client extends JFrame implements ActionListener {
             e.printStackTrace();
         }
 
-        playerName = JOptionPane.showInputDialog(null, "Ange ditt namn").toUpperCase().trim();
+        this.playerName=playerName;
 
         ObjOut.writeObject(playerName);
 
@@ -120,6 +121,7 @@ public class Client extends JFrame implements ActionListener {
         nextRoundButton.addActionListener(this);
         surrenderButton.addActionListener(this);
         showFinalResultButton.addActionListener(this);
+        finishButton.addActionListener(this);
         alternativeButton_1.addActionListener(this);
         alternativeButton_2.addActionListener(this);
         alternativeButton_3.addActionListener(this);
@@ -192,10 +194,9 @@ public class Client extends JFrame implements ActionListener {
             commandPanel.add(blankLabel,0,2);
         }
         if (command_int==0){                    //Efter att man visat slutresultatet, eller när motståndaren gett upp
-            surrenderButton.setText("Avsluta");
             commandPanel.add(blankLabel,0,0);
             commandPanel.add(avatarLabel,0,1);
-            commandPanel.add(surrenderButton,0,2);
+            commandPanel.add(finishButton,0,2);
         }
         if (command_int==1){                            //medan en rond spelas
             commandPanel.add(blankLabel,0,0);
@@ -322,8 +323,12 @@ public class Client extends JFrame implements ActionListener {
                 }
                 if (fromServer instanceof Integer) {
                     int inCommand = (int) fromServer;
-                    if (inCommand == -1){
+                    if (inCommand == COMMAND_SURRENDER){
                         opponentSurrender();
+                    }
+                    if (inCommand==COMMAND_CLOSE){
+
+                        return;
                     }
                     if (inCommand == 3) {
                         newGameButton.setVisible(true);
@@ -385,6 +390,12 @@ public class Client extends JFrame implements ActionListener {
 
                 System.exit(0); //rätt sätt att ge upp? kanske bättre med att kunna välja newGame?
             }
+            if (e.getSource() == finishButton) {
+                System.out.println("if finishButton");
+                ObjOut.writeObject((int) COMMAND_CLOSE);
+                ObjOut.flush();
+
+            }
 
             if ((e.getSource() == alternativeButton_1) || (e.getSource() == alternativeButton_2)
                     || (e.getSource() == (alternativeButton_3)) || (e.getSource() == (alternativeButton_4))) {
@@ -429,8 +440,22 @@ public class Client extends JFrame implements ActionListener {
         }
     }
 
+
     public static void main(String[] args) throws IOException {
-        Client client = new Client();
-        client.play();
+
+        String playerName = JOptionPane.showInputDialog(null, "Ange ditt namn").toUpperCase().trim();
+
+        while (true) {
+            Client client = new Client(playerName);
+            client.play();
+
+            int playAgain = JOptionPane.showConfirmDialog(null, "Vill du starta ett nytt spel?", "Quizzkampen",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (playAgain != 0) {
+                System.exit(0);
+            }
+        }
     }
+
 }

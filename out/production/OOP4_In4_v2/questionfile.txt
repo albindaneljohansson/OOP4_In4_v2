@@ -10,7 +10,7 @@ Mat och Dryck;Vilken ingrediens ingår INTE i en klassisk italiensk carbonara;Gr
 Mat och Dryck;Ett annat och gammalt namn för honungsvin?;Mjöd;Öl;Fläderblomsvin;Nektar
 Mat och Dryck;Känd arg kock från TV;Gordon Ramsay;Jamie Oliver;Nigella Lawson;Tina Nordström;
 Mat och Dryck;Vilket är den äldsta sortens vete?;Enkorn;Emmer;Dinkel;Durum
-Naturvetenskap;Vilken kemisk tecken har guld?;Au;Ag;Al;Ar
+Naturvetenskap;Vilket kemiskt tecken har guld?;Au;Ag;Al;Ar
 Naturvetenskap;Ett annat ord för att klyva atomer?;Fission;Fusion;Fascination;Emulsion
 Naturvetenskap;Vilket är det lättaste grundämnet?;Väte;Helium;Neon;Kväve
 Naturvetenskap;Vilken är den näst minsta planeten i vårt solsystem?;Mars;Merkurius;Venus;Jorden
@@ -21,4 +21,4 @@ TV och Dator-spel;Världens mest sålda spelkonsol?;Playstation 2;Playstation;Ni
 Musik;Fyra musiker som spelar tillsammans är en?;Kvartett;Kvintett;Fyrtett;Quatro
 Musik;Vilket instrument är Phil Collins känd för att spela?;Trummor;Piano;Elgitarr;Bas
 Musik;Vem var gruppen Genesis första sångare?;Peter Gabriel;Phil Collins;Tony Banks;Ray Wilson
-Musik;I vilken musikhistorisk period skrev Johann Sebastian Bach sin musik?;Barocken;Klassicismen;Renässansen;Romantiken
+Musik;I vilken musikhistorisk period verkade Johann Sebastian Bach?;Barocken;Klassicismen;Renässansen;Romantiken
