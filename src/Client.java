@@ -264,7 +264,7 @@ public class Client extends JFrame implements ActionListener {
         showFinalResultButton.setVisible(false);
         surrenderButton.setVisible(false);
         newGameButton.setVisible(false);
-        for (int i = 0; i < questionsPerRound; i++) {
+        for (int i = 0; i < questionsAnswered; i++) {
             questionResultPanel.remove(0);
         }
         questionLabel.setText(opponentPlayerName + " gav upp spelet. Du vann!");
@@ -393,9 +393,7 @@ public class Client extends JFrame implements ActionListener {
                     JButton correct = new JButton(String.valueOf(questionsAnswered));
                     correct.setBackground(Color.GREEN);
                     questionResultPanel.add(correct);
-                    //  button.setBackground(Color.GREEN);
-                    //answerFeedback="Rätt";
-                    //answerFeedback.setText("Rätt svar!");
+
                     repaint();
                     revalidate();
 
