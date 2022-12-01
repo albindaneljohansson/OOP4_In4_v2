@@ -98,7 +98,7 @@ public class Handler extends Thread {
             ObjOut.writeObject((String[]) opponentPlayerName);
             ObjOut.flush();
 
-            ObjOut.writeObject((int) 3);
+            ObjOut.writeObject((int) 1);
             ObjOut.flush();
 
             currentQuestionList = game.getOneRoundList(roundsPlayed);
