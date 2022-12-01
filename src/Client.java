@@ -132,6 +132,7 @@ public class Client extends JFrame implements ActionListener {
         alternativeButton_4.addActionListener(this);
         textField.addActionListener(this);
 
+        addColors();
         //pack();
         setSize(400, 400);
         setLocationRelativeTo(null);
@@ -142,7 +143,7 @@ public class Client extends JFrame implements ActionListener {
 
 
     public JPanel buildCommandPanel() {
-        commandPanel.setLayout(new GridLayout(1, 3, 4, 4));
+        commandPanel.setLayout(new GridLayout(1, 3, 5, 5));
 
         commandPanel.add(newGameButton);
         newGameButton.setVisible(false);  // Nytt spel dolt tills oppenent ansluter
@@ -184,6 +185,28 @@ public class Client extends JFrame implements ActionListener {
         chatPanel.add(sp, BorderLayout.CENTER);
         chatPanel.add(textField, BorderLayout.SOUTH);
         return chatPanel;
+    }
+
+    public void addColors (){
+        //purple, blue, green, yellow, orange, red, gray
+
+
+        gamePanel.setBackground(new Color(68, 50, 102));
+        commandPanel.setBackground(new Color(68, 50, 102));
+        alternativesPanel.setBackground(new Color( 68, 50, 102));
+        questionResultPanel.setBackground(new Color(68, 50, 102));
+        questionPanel.setBackground(new Color(171, 82, 182));
+        chatPanel.setBackground(new Color(171, 82, 182));
+        alternativeButton_1.setBackground(new Color(225, 180, 225));
+        alternativeButton_2.setBackground(new Color(225, 180, 225));
+        alternativeButton_3.setBackground(new Color(225, 180, 225));
+        alternativeButton_4.setBackground(new Color(225, 180, 225));
+        newGameButton.setBackground(new Color(230, 94, 246));
+        surrenderButton.setBackground(new Color(230, 94, 246));
+        nextRoundButton.setBackground(new Color(230, 94, 246));
+        showFinalResultButton.setBackground(new Color(230, 94, 246));
+        finishButton.setBackground(new Color(230, 94, 246));
+        questionLabel.setBackground(new Color(249, 216, 253));
     }
 
     public void updateCommandComponents (int command_int){
