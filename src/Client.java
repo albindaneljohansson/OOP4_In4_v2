@@ -39,7 +39,7 @@ public class Client extends JFrame implements ActionListener {
     JButton showFinalResultButton = new JButton("Slutresultat");
     JButton surrenderButton = new JButton("Ge upp");
     JButton finishButton = new JButton("Avsluta spel");
-    JLabel avatarLabel = new JLabel("url för avatar");
+    JLabel topLabel = new JLabel("Gnugga geniknölarna");
     JLabel blankLabel = new JLabel(" ");//hjälpkomponent för att få till rätt layout på commandPanel
 
     JPanel gamePanel = new JPanel();
@@ -60,11 +60,12 @@ public class Client extends JFrame implements ActionListener {
     JScrollPane sp = new JScrollPane(chatArea,
             JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     JTextField textField = new JTextField(33);
+    Color[] colorArray = new Color[4];
 
     ObjectInputStream ObjIn;
     ObjectOutputStream ObjOut;
 
-    String playerName;
+    final String playerName;
     static String opponentPlayerName;           //slippa hämta namnet om och om igen?
 
     List<String> questionList;
@@ -131,7 +132,7 @@ public class Client extends JFrame implements ActionListener {
         alternativeButton_4.addActionListener(this);
         textField.addActionListener(this);
 
-        addColors();
+
         //pack();
         setSize(400, 400);
         setLocationRelativeTo(null);
@@ -146,7 +147,7 @@ public class Client extends JFrame implements ActionListener {
 
         commandPanel.add(newGameButton);
         newGameButton.setVisible(false);  // Nytt spel dolt tills oppenent ansluter
-        commandPanel.add(avatarLabel);
+        commandPanel.add(topLabel);
         commandPanel.add(blankLabel);
 
         return commandPanel;
@@ -186,59 +187,42 @@ public class Client extends JFrame implements ActionListener {
         return chatPanel;
     }
 
-    public void addColors(String colorTheme) {
+    public void addColors(Color[] colorArray) {
         //purple, blue, green, yellow, orange, red, gray
-        Color darkest;
-        Color dark;
-        Color light;
-        Color lightest;
+        Color darkest = colorArray[0];
+        Color dark = colorArray[1];
+        Color light = colorArray[2];
+        Color lightest = colorArray[3];
 
-        if (colorTheme.equalsIgnoreCase("purple")) {
-            darkest = new Color(68, 50, 102);
-            dark = new Color(140, 72, 159);
-            light = new Color(195, 195, 229);
-            lightest = new Color(241, 240, 255);
-        }else if (colorTheme.equalsIgnoreCase("blue")) {
-            darkest=new Color(0, 51, 102);
-            dark=new Color(51, 102, 153);
-            light=new Color(124, 181, 239);
-            lightest=new Color(218, 238, 255);
-        }else if (colorTheme.equalsIgnoreCase("green")) {
-            darkest=new Color(	0, 85, 2 );
-            dark=new Color(57, 145, 59);
-            light=new Color(179, 222, 164);
-            lightest=new Color(229, 252, 223);
-        }else if (colorTheme.equalsIgnoreCase("yellowOrange")) {
-            darkest=new Color(	255, 102, 0);
-            dark=new Color(	255, 153, 0);
-            light=new Color(255, 255, 102);
-            lightest=new Color(255, 255, 190);
-        }else if (colorTheme.equalsIgnoreCase("redPink")) {
-            darkest=new Color(	153, 0, 51);
-            dark=new Color(218, 50, 107);
-            light=new Color(238, 113, 155);
-            lightest=new Color(246, 193, 212);
-        } else {
-            darkest=Color.BLACK;
-            dark=Color.GRAY;
-            light=Color.LIGHT_GRAY;
-            lightest=Color.WHITE;
-        }
+
         newGameButton.setBackground(darkest);
         surrenderButton.setBackground(darkest);
         nextRoundButton.setBackground(darkest);
         showFinalResultButton.setBackground(darkest);
         finishButton.setBackground(darkest);
+        newGameButton.setForeground(light);
+        surrenderButton.setForeground(light);
+        nextRoundButton.setForeground(light);
+        showFinalResultButton.setForeground(light);
+        finishButton.setForeground(light);
+
         alternativeButton_1.setBackground(dark);
         alternativeButton_2.setBackground(dark);
         alternativeButton_3.setBackground(dark);
         alternativeButton_4.setBackground(dark);
+        alternativeButton_1.setForeground(lightest);
+        alternativeButton_2.setForeground(lightest);
+        alternativeButton_3.setForeground(lightest);
+        alternativeButton_4.setForeground(lightest);
         gamePanel.setBackground(light);
         commandPanel.setBackground(light);
+        topLabel.setForeground(darkest);
         alternativesPanel.setBackground(light);
         questionResultPanel.setBackground(light);
         questionPanel.setBackground(light);
+        questionLabel.setForeground(darkest);
         chatArea.setBackground(lightest);
+        chatArea.setForeground(darkest);
     }
 
     public void updateCommandComponents(int command_int) {
@@ -249,27 +233,27 @@ public class Client extends JFrame implements ActionListener {
 
         if (command_int == -1) {                            //startläge samt efter att slutresultat visats/surrender
             commandPanel.add(newGameButton, 0, 0);
-            commandPanel.add(avatarLabel, 0, 1);
+            commandPanel.add(topLabel, 0, 1);
             commandPanel.add(blankLabel, 0, 2);
         }
         if (command_int == 0) {                    //Efter att man visat slutresultatet, eller när motståndaren gett upp
             commandPanel.add(blankLabel, 0, 0);
-            commandPanel.add(avatarLabel, 0, 1);
+            commandPanel.add(topLabel, 0, 1);
             commandPanel.add(finishButton, 0, 2);
         }
         if (command_int == 1) {                            //medan en rond spelas
             commandPanel.add(blankLabel, 0, 0);
-            commandPanel.add(avatarLabel, 0, 1);
+            commandPanel.add(topLabel, 0, 1);
             commandPanel.add(surrenderButton, 0, 2);
         }
         if (command_int == 2) {                            //när en rond är klar
             commandPanel.add(nextRoundButton, 0, 0);
-            commandPanel.add(avatarLabel, 0, 1);
+            commandPanel.add(topLabel, 0, 1);
             commandPanel.add(surrenderButton, 0, 2);
         }
         if (command_int == 3) {                            //när hela spelet är klart
             commandPanel.add(blankLabel, 0, 0);
-            commandPanel.add(avatarLabel, 0, 1);
+            commandPanel.add(topLabel, 0, 1);
             commandPanel.add(showFinalResultButton, 0, 2);
         }
     }
@@ -352,10 +336,13 @@ public class Client extends JFrame implements ActionListener {
                     roundsPerGame = Integer.parseInt(questionList.get(7));
                     setUpQuestion(questionList);
                 }
+                if (fromServer instanceof Color[]) {     //färgerna för temat tas emot
+                    colorArray = (Color[]) fromServer;
+                    addColors(colorArray);
+                }
 
                 if (fromServer instanceof String[]) {                            // tar emot resultat-arrayer
                     String[] resultArray = (String[]) fromServer;
-
 
                     if (resultArray[0].equalsIgnoreCase("0")) {
                         questionsAnswered = 0;
