@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -23,13 +24,16 @@ public class Handler extends Thread {
 
     List<Questions> currentQuestionList = new ArrayList<>();
 
+    List<Color> colors = new ArrayList<>();
+    String colorTheme;
+
 
     public Handler(Socket socket, Game game, int playerNumber) {
 
         this.playerNumber = playerNumber;
         this.socket = socket;
         this.game = game;
-        this.numberOfRounds=game.getNumberOfRounds();
+        this.numberOfRounds = game.getNumberOfRounds();
 
         try {
             ObjOut = new ObjectOutputStream(socket.getOutputStream());
@@ -91,20 +95,20 @@ public class Handler extends Thread {
                     if (objectIn instanceof Integer) {
                         int command = (int) objectIn;
 
-                        if (command == -1){                   //surrender
+                        if (command == -1) {                   //surrender
                             opponent.ObjOut.writeObject((int) -1);
                             ObjOut.flush();
                         }
-                        if (command==0){
+                        if (command == 0) {
                             System.out.println("command==0");
-                            ObjOut.writeObject((int)0);
+                            ObjOut.writeObject((int) 0);
                             ObjOut.flush();
                         }
                         if (command == 1) {                 // Första frågan har index 0 eftersom command 1 är nytt spel
                             ObjOut.writeObject(currentQuestionList.get(questionsAsked).questionsAndAnswersList);
                             ObjOut.flush();
                         }
-                        if (command == 2){                    // Next-roundknappen
+                        if (command == 2) {                    // Next-roundknappen
                             roundsPlayed++;
                             questionsAsked = 0;
                             roundScore = 0;
@@ -115,7 +119,7 @@ public class Handler extends Thread {
 
                         if (command >= 10) {   // Varje gång clienten svarat på en fråga hoppar vi in här
 
-                            if (command==10) {  //rätt svar
+                            if (command == 10) {  //rätt svar
                                 roundScore++;
                             }
                             questionsAsked++;
@@ -129,10 +133,10 @@ public class Handler extends Thread {
 
                                 while ((opponent.questionsAsked < questionsPerRound) || (opponent.roundsPlayed < roundsPlayed)) { //Väntar på oppenent
                                     Thread.sleep(100);                                                          // Både för i round och för varje round
-                                        if (command == -1) {                   //surrender
-                                            opponent.ObjOut.writeObject((int) -1);
-                                            ObjOut.flush();
-                                        }
+                                    if (command == -1) {                   //surrender
+                                        opponent.ObjOut.writeObject((int) -1);
+                                        ObjOut.flush();
+                                    }
                                 }
                                 String[] resultArray = new String[6];
                                 String result = "";
@@ -172,4 +176,5 @@ public class Handler extends Thread {
             e.printStackTrace();
         }
     }
+
 }

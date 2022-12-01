@@ -77,13 +77,12 @@ public class Client extends JFrame implements ActionListener {
     //plocka bort frågeknappar medan vi väntar
     int questionsAnswered = 0;
 
-    int totalGameScore =0;
-    int opponentTotalGameScore =0;
-
+    int totalGameScore = 0;
+    int opponentTotalGameScore = 0;
 
 
     //boolean win;
-   // boolean correctAnswer;
+    // boolean correctAnswer;
 
     final static int COMMAND_SURRENDER = -1;
     final static int COMMAND_CLOSE = 0;
@@ -104,7 +103,7 @@ public class Client extends JFrame implements ActionListener {
             e.printStackTrace();
         }
 
-        this.playerName=playerName;
+        this.playerName = playerName;
 
         ObjOut.writeObject(playerName);
 
@@ -161,7 +160,7 @@ public class Client extends JFrame implements ActionListener {
         questionPanel.add(questionLabel);
         gamePanel.add(questionPanel, BorderLayout.CENTER);
         questionResultPanel.setLayout(new FlowLayout());
-        gamePanel.add(questionResultPanel,BorderLayout.SOUTH);
+        gamePanel.add(questionResultPanel, BorderLayout.SOUTH);
         return gamePanel;
     }
 
@@ -187,64 +186,97 @@ public class Client extends JFrame implements ActionListener {
         return chatPanel;
     }
 
-    public void addColors (){
+    public void addColors(String colorTheme) {
         //purple, blue, green, yellow, orange, red, gray
+        Color darkest;
+        Color dark;
+        Color light;
+        Color lightest;
 
-
-        gamePanel.setBackground(new Color(68, 50, 102));
-        commandPanel.setBackground(new Color(68, 50, 102));
-        alternativesPanel.setBackground(new Color( 68, 50, 102));
-        questionResultPanel.setBackground(new Color(68, 50, 102));
-        questionPanel.setBackground(new Color(171, 82, 182));
-        chatPanel.setBackground(new Color(171, 82, 182));
-        alternativeButton_1.setBackground(new Color(225, 180, 225));
-        alternativeButton_2.setBackground(new Color(225, 180, 225));
-        alternativeButton_3.setBackground(new Color(225, 180, 225));
-        alternativeButton_4.setBackground(new Color(225, 180, 225));
-        newGameButton.setBackground(new Color(230, 94, 246));
-        surrenderButton.setBackground(new Color(230, 94, 246));
-        nextRoundButton.setBackground(new Color(230, 94, 246));
-        showFinalResultButton.setBackground(new Color(230, 94, 246));
-        finishButton.setBackground(new Color(230, 94, 246));
-        questionLabel.setBackground(new Color(249, 216, 253));
+        if (colorTheme.equalsIgnoreCase("purple")) {
+            darkest = new Color(68, 50, 102);
+            dark = new Color(140, 72, 159);
+            light = new Color(195, 195, 229);
+            lightest = new Color(241, 240, 255);
+        }else if (colorTheme.equalsIgnoreCase("blue")) {
+            darkest=new Color(0, 51, 102);
+            dark=new Color(51, 102, 153);
+            light=new Color(124, 181, 239);
+            lightest=new Color(218, 238, 255);
+        }else if (colorTheme.equalsIgnoreCase("green")) {
+            darkest=new Color(	0, 85, 2 );
+            dark=new Color(57, 145, 59);
+            light=new Color(179, 222, 164);
+            lightest=new Color(229, 252, 223);
+        }else if (colorTheme.equalsIgnoreCase("yellowOrange")) {
+            darkest=new Color(	255, 102, 0);
+            dark=new Color(	255, 153, 0);
+            light=new Color(255, 255, 102);
+            lightest=new Color(255, 255, 190);
+        }else if (colorTheme.equalsIgnoreCase("redPink")) {
+            darkest=new Color(	153, 0, 51);
+            dark=new Color(218, 50, 107);
+            light=new Color(238, 113, 155);
+            lightest=new Color(246, 193, 212);
+        } else {
+            darkest=Color.BLACK;
+            dark=Color.GRAY;
+            light=Color.LIGHT_GRAY;
+            lightest=Color.WHITE;
+        }
+        newGameButton.setBackground(darkest);
+        surrenderButton.setBackground(darkest);
+        nextRoundButton.setBackground(darkest);
+        showFinalResultButton.setBackground(darkest);
+        finishButton.setBackground(darkest);
+        alternativeButton_1.setBackground(dark);
+        alternativeButton_2.setBackground(dark);
+        alternativeButton_3.setBackground(dark);
+        alternativeButton_4.setBackground(dark);
+        gamePanel.setBackground(light);
+        commandPanel.setBackground(light);
+        alternativesPanel.setBackground(light);
+        questionResultPanel.setBackground(light);
+        questionPanel.setBackground(light);
+        chatArea.setBackground(lightest);
     }
 
-    public void updateCommandComponents (int command_int){
+    public void updateCommandComponents(int command_int) {
 
         commandPanel.remove(0);             //tömmer panelen så att den kan ersättas med nya komponenter
         commandPanel.remove(0);
         commandPanel.remove(0);
 
-        if (command_int==-1){                            //startläge samt efter att slutresultat visats/surrender
-            commandPanel.add(newGameButton,0,0);
-            commandPanel.add(avatarLabel,0,1);
-            commandPanel.add(blankLabel,0,2);
+        if (command_int == -1) {                            //startläge samt efter att slutresultat visats/surrender
+            commandPanel.add(newGameButton, 0, 0);
+            commandPanel.add(avatarLabel, 0, 1);
+            commandPanel.add(blankLabel, 0, 2);
         }
-        if (command_int==0){                    //Efter att man visat slutresultatet, eller när motståndaren gett upp
-            commandPanel.add(blankLabel,0,0);
-            commandPanel.add(avatarLabel,0,1);
-            commandPanel.add(finishButton,0,2);
+        if (command_int == 0) {                    //Efter att man visat slutresultatet, eller när motståndaren gett upp
+            commandPanel.add(blankLabel, 0, 0);
+            commandPanel.add(avatarLabel, 0, 1);
+            commandPanel.add(finishButton, 0, 2);
         }
-        if (command_int==1){                            //medan en rond spelas
-            commandPanel.add(blankLabel,0,0);
-            commandPanel.add(avatarLabel,0,1);
-            commandPanel.add(surrenderButton,0,2);
+        if (command_int == 1) {                            //medan en rond spelas
+            commandPanel.add(blankLabel, 0, 0);
+            commandPanel.add(avatarLabel, 0, 1);
+            commandPanel.add(surrenderButton, 0, 2);
         }
-        if (command_int==2){                            //när en rond är klar
-            commandPanel.add(nextRoundButton,0,0);
-            commandPanel.add(avatarLabel,0,1);
-            commandPanel.add(surrenderButton,0,2);
+        if (command_int == 2) {                            //när en rond är klar
+            commandPanel.add(nextRoundButton, 0, 0);
+            commandPanel.add(avatarLabel, 0, 1);
+            commandPanel.add(surrenderButton, 0, 2);
         }
-        if (command_int==3){                            //när hela spelet är klart
-            commandPanel.add(blankLabel,0,0);
-            commandPanel.add(avatarLabel,0,1);
-            commandPanel.add(showFinalResultButton,0,2);
+        if (command_int == 3) {                            //när hela spelet är klart
+            commandPanel.add(blankLabel, 0, 0);
+            commandPanel.add(avatarLabel, 0, 1);
+            commandPanel.add(showFinalResultButton, 0, 2);
         }
     }
 
     public void setUpQuestion(List<String> list) throws InterruptedException { // Titlar sätts från fråge-listan
         updateCommandComponents(COMMAND_NEW_GAME);
-        if (answerFeedback !=null){
+        if (answerFeedback != null) {
             returnButtonColor();
         }
         alternativesPanel.setVisible(true);
@@ -265,7 +297,7 @@ public class Client extends JFrame implements ActionListener {
         alternativeButton_4.setBackground(null);
         repaint();
         revalidate();
-        answerFeedback=null;
+        answerFeedback = null;
     }
 
     public void newRound(String roundResult) {
@@ -283,9 +315,9 @@ public class Client extends JFrame implements ActionListener {
         }
     }
 
-    public void waitForOpponent(){          // Båda spelare hoppar hit efter en klar ronda
-                                            // men spleare 2 hinner inte se detta innan GUI uppdatera igen
-                                            // då resultatlistan kommer in
+    public void waitForOpponent() {          // Båda spelare hoppar hit efter en klar ronda
+        // men spleare 2 hinner inte se detta innan GUI uppdatera igen
+        // då resultatlistan kommer in
 
 
         alternativesPanel.setVisible(false);                //döljer panelen med knapparna
@@ -294,7 +326,7 @@ public class Client extends JFrame implements ActionListener {
         revalidate();
     }
 
-    public void opponentSurrender (){
+    public void opponentSurrender() {
         alternativesPanel.setVisible(false);
         updateCommandComponents(COMMAND_CLOSE);
         questionResultPanel.setVisible(false);
@@ -341,8 +373,8 @@ public class Client extends JFrame implements ActionListener {
                         String roundResult = (message + "Du fick " + resultArray[3] + " poäng. " +
                                 resultArray[4] + " fick " + resultArray[5] + " poäng!");
                         scoreList.add(resultArray[3] + "-" + resultArray[5]); // lägger till rondens resultat till en lista
-                        totalGameScore = totalGameScore+Integer.parseInt(resultArray[3]);
-                        opponentTotalGameScore = opponentTotalGameScore+Integer.parseInt(resultArray[5]);
+                        totalGameScore = totalGameScore + Integer.parseInt(resultArray[3]);
+                        opponentTotalGameScore = opponentTotalGameScore + Integer.parseInt(resultArray[5]);
                         newRound(roundResult);                                 // som kan visas i slutet av spelet
                     }
 
@@ -352,10 +384,10 @@ public class Client extends JFrame implements ActionListener {
                 }
                 if (fromServer instanceof Integer) {
                     int inCommand = (int) fromServer;
-                    if (inCommand == COMMAND_SURRENDER){
+                    if (inCommand == COMMAND_SURRENDER) {
                         opponentSurrender();
                     }
-                    if (inCommand==COMMAND_CLOSE){
+                    if (inCommand == COMMAND_CLOSE) {
 
                         return;
                     }
@@ -412,12 +444,12 @@ public class Client extends JFrame implements ActionListener {
                     winner = "Oavgjort!";
                 }
                 // enda sättet att få ny rad i JLabel är tydligen HTML
-                String finalResult = "<html>" +"<center>" +"Resultat: " + winner + "</center>" +
+                String finalResult = "<html>" + "<center>" + "Resultat: " + winner + "</center>" +
                         playerName + ": &emsp; &emsp; " + opponentPlayerName + ":";
                 for (String s : scoreList) {                    // Hämtar resultat från ScoreList
-                    finalResult = finalResult +  "<center>" + s + "</center>";
+                    finalResult = finalResult + "<center>" + s + "</center>";
                 }
-                finalResult = finalResult + "Totalt:   "+totalGameScore+"-"+opponentTotalGameScore+"</html>";
+                finalResult = finalResult + "Totalt:   " + totalGameScore + "-" + opponentTotalGameScore + "</html>";
                 questionLabel.setText(finalResult);
 
                 repaint();
@@ -452,7 +484,7 @@ public class Client extends JFrame implements ActionListener {
                     repaint();
                     revalidate();
 
-                  //  correctAnswer = true; //Anna: behövs den här variabeln? varför inte ObjOut.writeObject(true);
+                    //  correctAnswer = true; //Anna: behövs den här variabeln? varför inte ObjOut.writeObject(true);
                     // och motsvarande i else-satsen
 
                     ObjOut.writeObject((int) COMMAND_CORRECT);
@@ -464,7 +496,7 @@ public class Client extends JFrame implements ActionListener {
                     inCorrect.setBackground(Color.RED);
                     questionResultPanel.add(inCorrect);
 //                    button.setBackground(Color.RED);
-  //                  answerFeedback="Fel";
+                    //                  answerFeedback="Fel";
                     repaint();
                     revalidate();
                     //correctAnswer = false;
@@ -493,7 +525,7 @@ public class Client extends JFrame implements ActionListener {
             int playAgain = JOptionPane.showConfirmDialog(null, "Vill du starta ett nytt spel?", "Quizzkampen",
                     JOptionPane.YES_NO_OPTION);
 
-            if (playAgain == 0){
+            if (playAgain == 0) {
                 client.dispose();
                 client = new Client(playerName);
                 client.play();
