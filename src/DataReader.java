@@ -2,12 +2,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class DataBase {
+public class DataReader {
     String category;
     List<String> oneQuestionList = new ArrayList<>();
     String pathToQuestionFile = "src/questionfile.txt";
 
-    public DataBase(String category){
+    public DataReader(String category){
         this.category=category;
         fileReaderToList();
     }

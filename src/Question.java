@@ -9,17 +9,17 @@ import java.util.List;
  * rundsPerGame index 7
  */
 
-public class Questions {
+public class Question {
     String category;
     List<String> questionsAndAnswersList;
 
-    public Questions(String category, int questionsPerRound, int roundsPerGame) {
+    public Question(String category, int questionsPerRound, int roundsPerGame) {
         this.category=category;
-        DataBase db = new DataBase(category);
-        List<String> tempList = new ArrayList<>(db.getAlternatives());
+        DataReader dr = new DataReader(category);
+        List<String> tempList = new ArrayList<>(dr.getAlternatives());
         this.questionsAndAnswersList = tempList;
-        questionsAndAnswersList.add(db.getQuestion());
-        questionsAndAnswersList.add(db.getAnswer());
+        questionsAndAnswersList.add(dr.getQuestion());
+        questionsAndAnswersList.add(dr.getAnswer());
         questionsAndAnswersList.add(String.valueOf(questionsPerRound));     //Lägger antal frågor per round
         questionsAndAnswersList.add(String.valueOf(roundsPerGame));          //Lägger antal ronder
     }

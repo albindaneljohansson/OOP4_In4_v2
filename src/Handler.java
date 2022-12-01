@@ -23,7 +23,7 @@ public class Handler extends Thread {
 
     int roundScore = 0;     //sammanställning av poäng per rond
 
-    List<Questions> currentQuestionList = new ArrayList<>();
+    List<Question> currentQuestionList = new ArrayList<>();
 
     Color[] colors;
     String colorTheme;

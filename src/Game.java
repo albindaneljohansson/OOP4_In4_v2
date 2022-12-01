@@ -12,7 +12,7 @@ public class Game {
     int player2_gameScore = 0;
     final int numberOfRounds;
     final int QuestionsPerRound;
-    List<List<Questions>> fullGameList = new ArrayList<>();
+    List<List<Question>> fullGameList = new ArrayList<>();
     List<String> categories = new ArrayList<>();
 
 
@@ -36,16 +36,16 @@ public class Game {
     }
 
     //returnerar en lista med samtliga questions för den specifika ronden
-    public List<Questions> getOneRoundList(int roundNumber) {
+    public List<Question> getOneRoundList(int roundNumber) {
         return fullGameList.get(roundNumber);
     }
 
     // setter för antalet frågor + kategori i ett spel
-    private List<Questions> setOneRoundList(String category) { // Vill skapa en lista med unika frågor för EN rond
-        List<Questions> tempOneRoundList = new ArrayList<>();
+    private List<Question> setOneRoundList(String category) { // Vill skapa en lista med unika frågor för EN rond
+        List<Question> tempOneRoundList = new ArrayList<>();
 
         while (tempOneRoundList.size() <= getQuestionsPerRound()) {
-            Questions q = new Questions(category, QuestionsPerRound, numberOfRounds); // Skickar med antal frågor och ronder
+            Question q = new Question(category, QuestionsPerRound, numberOfRounds); // Skickar med antal frågor och ronder
             int counter=0;
             if (tempOneRoundList.size() > 0) {
                    for (int j=0; j<tempOneRoundList.size(); j++) {                  // Iterera över listan - Om ej dublettfråga - Lägg till
@@ -71,7 +71,7 @@ public class Game {
         List<String> copyCat = new ArrayList<>(categories);
         Collections.shuffle(copyCat);                       //Shuffla innan gör att vi aldrig får samma kategori 2ggr/spel
         for (int i = 0; i < numberOfRounds; i++) {
-            List<Questions> temp = new ArrayList<>();
+            List<Question> temp = new ArrayList<>();
             temp = setOneRoundList(copyCat.get(i));
             fullGameList.add(temp);
         }
