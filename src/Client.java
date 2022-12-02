@@ -51,8 +51,8 @@ public class Client extends JFrame implements ActionListener {
 
     Color[] colorArray = new Color[4];
 
-    ObjectInputStream ObjIn;
-    ObjectOutputStream ObjOut;
+    ObjectInputStream objIn;
+    ObjectOutputStream objOut;
 
     final String playerName;
     static String opponentPlayerName;           //slippa hämta namnet om och om igen?
@@ -83,12 +83,12 @@ public class Client extends JFrame implements ActionListener {
 
         try {
             Socket socket = new Socket("127.0.0.1", 8902);
-            ObjOut = new ObjectOutputStream(socket.getOutputStream());
-            ObjIn = new ObjectInputStream(socket.getInputStream());
+            objOut = new ObjectOutputStream(socket.getOutputStream());
+            objIn = new ObjectInputStream(socket.getInputStream());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ObjOut.writeObject(playerName);
+        objOut.writeObject(playerName);
 
         buildGUI();         //bygger upp grafiken för spelet
     }
@@ -144,7 +144,7 @@ public class Client extends JFrame implements ActionListener {
         try {
             Object fromServer;
 
-            while ((fromServer = ObjIn.readObject()) != null) {
+            while ((fromServer = objIn.readObject()) != null) {
 
                 if (fromServer instanceof String) {                              //Om inobjekt är String -> lägg till i chat
                     chatArea.append((String) fromServer + "\n");
@@ -219,13 +219,13 @@ public class Client extends JFrame implements ActionListener {
         try {
 
             if (e.getSource() == textField) {
-                ObjOut.writeObject((String) playerName + ": " + textField.getText().trim());
-                ObjOut.flush();
+                objOut.writeObject((String) playerName + ": " + textField.getText().trim());
+                objOut.flush();
                 textField.setText("");
             }
             if (e.getSource() == newGameButton) {                   // triggar handler att skicka lista med frågor
-                ObjOut.writeObject((int) COMMAND_NEW_GAME);
-                ObjOut.flush();
+                objOut.writeObject((int) COMMAND_NEW_GAME);
+                objOut.flush();
             }
             if (e.getSource() == nextRoundButton) {                   //trigga handler att skicka nästa lista med frågor
 
@@ -235,8 +235,8 @@ public class Client extends JFrame implements ActionListener {
                 repaint();
                 revalidate();
 
-                ObjOut.writeObject((int) COMMAND_NEXT_ROUND);
-                ObjOut.flush();
+                objOut.writeObject((int) COMMAND_NEXT_ROUND);
+                objOut.flush();
             }
             if (e.getSource() == showFinalResultButton) {       //Plocka bort alla knappar och skriva ut scorelist
 
@@ -268,13 +268,13 @@ public class Client extends JFrame implements ActionListener {
                 revalidate();
             }
             if (e.getSource() == surrenderButton) {
-                ObjOut.writeObject((int) COMMAND_SURRENDER);
-                ObjOut.flush();
+                objOut.writeObject((int) COMMAND_SURRENDER);
+                objOut.flush();
                 System.exit(0);
             }
             if (e.getSource() == finishButton) {
-                ObjOut.writeObject((int) COMMAND_CLOSE);
-                ObjOut.flush();
+                objOut.writeObject((int) COMMAND_CLOSE);
+                objOut.flush();
             }
 
             if ((e.getSource() == alternativeButton_1) || (e.getSource() == alternativeButton_2)
@@ -290,8 +290,8 @@ public class Client extends JFrame implements ActionListener {
                     questionResultPanel.add(correct);
                     repaint();
                     revalidate();
-                    ObjOut.writeObject((int) COMMAND_CORRECT);
-                    ObjOut.flush();
+                    objOut.writeObject((int) COMMAND_CORRECT);
+                    objOut.flush();
                 }
                 if (!answer.equalsIgnoreCase(questionList.get(5))) {
                     JButton inCorrect = new JButton(String.valueOf(questionsAnswered));
@@ -299,8 +299,8 @@ public class Client extends JFrame implements ActionListener {
                     questionResultPanel.add(inCorrect);
                     repaint();
                     revalidate();
-                    ObjOut.writeObject((int) COMMAND_INCORRECT);
-                    ObjOut.flush();
+                    objOut.writeObject((int) COMMAND_INCORRECT);
+                    objOut.flush();
                 }
                 if (questionsAnswered == questionsPerRound) {  // Om man svarat antal frågor per runda
                     waitForOpponent();                      // innan motståndare får man vänta på listan

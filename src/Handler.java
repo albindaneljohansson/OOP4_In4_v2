@@ -11,8 +11,8 @@ public class Handler extends Thread {
     String playerName;
     Handler opponent;
     Socket socket;
-    ObjectInputStream ObjIn;
-    ObjectOutputStream ObjOut;
+    ObjectInputStream objIn;
+    ObjectOutputStream objOut;
     Game game;
 
     int questionsPerRound;
@@ -50,10 +50,10 @@ public class Handler extends Thread {
         setColors(colorTheme);
 
         try {
-            ObjOut = new ObjectOutputStream(socket.getOutputStream());
-            ObjIn = new ObjectInputStream(socket.getInputStream());
+            objOut = new ObjectOutputStream(socket.getOutputStream());
+            objIn = new ObjectInputStream(socket.getInputStream());
 
-            this.playerName = (String) ObjIn.readObject();
+            this.playerName = (String) objIn.readObject();
 
             if (playerNumber == 1) {
                 game.setFullGameList();
@@ -61,14 +61,14 @@ public class Handler extends Thread {
             this.numberOfRounds = game.getNumberOfRounds();         // Vi måste sätta antalet rounds för båda spelare
             this.questionsPerRound = game.getQuestionsPerRound();
 
-            ObjOut.writeObject((String) "Välkommen " + playerName);
-            ObjOut.flush();
+            objOut.writeObject((String) "Välkommen " + playerName);
+            objOut.flush();
 
-            ObjOut.writeObject(colors);
-            ObjOut.flush();
+            objOut.writeObject(colors);
+            objOut.flush();
 
             if (playerNumber == 1) {
-                ObjOut.writeObject((String) "Väntar på en motspelare...");
+                objOut.writeObject((String) "Väntar på en motspelare...");
             }
 
         } catch (IOException e) {
@@ -89,17 +89,17 @@ public class Handler extends Thread {
     public void run() {
         try {
             if (playerNumber == 1) {
-                ObjOut.writeObject((String) "Motspelare ansluten!");
+                objOut.writeObject((String) "Motspelare ansluten!");
             }
-            ObjOut.writeObject((String) "Du spelar mot: " + opponent.playerName);
-            ObjOut.flush();
+            objOut.writeObject((String) "Du spelar mot: " + opponent.playerName);
+            objOut.flush();
 
             String[] opponentPlayerName = new String[]{"1", opponent.playerName};
-            ObjOut.writeObject((String[]) opponentPlayerName);
-            ObjOut.flush();
+            objOut.writeObject((String[]) opponentPlayerName);
+            objOut.flush();
 
-            ObjOut.writeObject((int) 1);
-            ObjOut.flush();
+            objOut.writeObject((int) 1);
+            objOut.flush();
 
             currentQuestionList = game.getOneRoundList(roundsPlayed);
 
@@ -108,31 +108,31 @@ public class Handler extends Thread {
                 if (getOpponent() != null) {                // Denna if-sats villkorar chat och spel till när det finns en opponent
 
 
-                    Object objectIn = ObjIn.readObject();
+                    Object objectIn = objIn.readObject();
 
                     if (objectIn instanceof Integer) {
                         int command = (int) objectIn;
 
                         if (command == -1) {                   //surrender
-                            opponent.ObjOut.writeObject((int) -1);
-                            ObjOut.flush();
+                            opponent.objOut.writeObject((int) -1);
+                            objOut.flush();
                         }
                         if (command == 0) {
                             System.out.println("command==0");
-                            ObjOut.writeObject((int) 0);
-                            ObjOut.flush();
+                            objOut.writeObject((int) 0);
+                            objOut.flush();
                         }
                         if (command == 1) {                 // Första frågan har index 0 eftersom command 1 är nytt spel
-                            ObjOut.writeObject(currentQuestionList.get(questionsAsked).questionsAndAnswersList);
-                            ObjOut.flush();
+                            objOut.writeObject(currentQuestionList.get(questionsAsked).questionsAndAnswersList);
+                            objOut.flush();
                         }
                         if (command == 2) {                    // Next-roundknappen
                             roundsPlayed++;
                             questionsAsked = 0;
                             roundScore = 0;
                             currentQuestionList = game.getOneRoundList(roundsPlayed);
-                            ObjOut.writeObject(currentQuestionList.get(questionsAsked).questionsAndAnswersList);//ger indexOutOfBounds
-                            ObjOut.flush();
+                            objOut.writeObject(currentQuestionList.get(questionsAsked).questionsAndAnswersList);//ger indexOutOfBounds
+                            objOut.flush();
                         }
 
                         if (command >= 10) {   // Varje gång clienten svarat på en fråga hoppar vi in här
@@ -143,8 +143,8 @@ public class Handler extends Thread {
                             questionsAsked++;
 
                             if (questionsAsked < questionsPerRound) {     // Om antalet frågor är mindre än frågor per rond skickar vi nästa fråga
-                                ObjOut.writeObject(currentQuestionList.get(questionsAsked).questionsAndAnswersList);
-                                ObjOut.flush();
+                                objOut.writeObject(currentQuestionList.get(questionsAsked).questionsAndAnswersList);
+                                objOut.flush();
                             }
 
                             if (questionsAsked == questionsPerRound) {      // När alla frågor är besvarade i en round
@@ -152,8 +152,8 @@ public class Handler extends Thread {
                                 while ((opponent.questionsAsked < questionsPerRound) || (opponent.roundsPlayed < roundsPlayed)) { //Väntar på oppenent
                                     Thread.sleep(100);                                                          // Både för i round och för varje round
                                     if (command == -1) {                   //surrender
-                                        opponent.ObjOut.writeObject((int) -1);
-                                        ObjOut.flush();
+                                        opponent.objOut.writeObject((int) -1);
+                                        objOut.flush();
                                     }
                                 }
                                 String[] resultArray = new String[6];
@@ -169,14 +169,14 @@ public class Handler extends Thread {
                                     result = "2";
                                 }
                                 resultArray = new String[]{"0", result, playerName, String.valueOf(roundScore), opponent.playerName, String.valueOf(opponent.roundScore)};
-                                ObjOut.writeObject((String[]) resultArray);
-                                ObjOut.flush();
+                                objOut.writeObject((String[]) resultArray);
+                                objOut.flush();
 
                                 game.setGameScore(playerNumber, roundScore); // plussa på poäng per runda i Game
 
                                 if (roundsPlayed == numberOfRounds) {   // när runderna är slut, skicka till client att visa gameresult
-                                    ObjOut.writeObject((Integer) 99);        // command 99 = hos client: visa gameresult-lista
-                                    ObjOut.flush();
+                                    objOut.writeObject((Integer) 99);        // command 99 = hos client: visa gameresult-lista
+                                    objOut.flush();
                                 }
                             }
                         }
@@ -184,9 +184,9 @@ public class Handler extends Thread {
 
                     if (objectIn instanceof String) {
                         String input = objectIn.toString().trim();
-                        ObjOut.writeObject((String) input);
-                        opponent.ObjOut.writeObject((String) input);
-                        ObjOut.flush();
+                        objOut.writeObject((String) input);
+                        opponent.objOut.writeObject((String) input);
+                        objOut.flush();
                     }
                 }
             }
